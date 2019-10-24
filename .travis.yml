@@ -28,11 +28,13 @@ matrix:
 
 install:
   - sudo apt install default-jre
+  - export PATH="~/.cabal/bin:$PATH"
   - |
     if [ -z "$STACK_YAML" ]; then
       ghc --version
       cabal --version
       cabal new-update
+      cabal new-install hspec-discover
       cabal new-build --enable-tests --enable-benchmarks --ghc-options="-Wall"
     else
       # install stack
@@ -50,9 +52,12 @@ script:
       cabal new-test --enable-tests
       cabal check
       mkdir -p dist
-      cabal sdist --builddir=dist
+      cabal new-sdist --builddir=dist
       cd dist
-      cabal install $(find $PWD -name "*.tar.gz")
+      cabal sandbox init
+      cabal new-install $(find $PWD -name "*.tar.gz")
+      cd -
     else
       stack test --system-ghc
     fi
+  - curl -sSL https://raw.github.com/ndmitchell/neil/master/misc/travis.sh | sh -s -- hlint .

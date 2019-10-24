@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cc104c84e5d73815e2044d695022b52d0d546f52957a4f36d2a1527941ac95f3
+-- hash: bab081461f673154221082ddfd47929c9dfc838028c48beb5a7a555479fcfc7d
 
 name:           call-alloy
 version:        0.1.0.0
@@ -21,10 +21,9 @@ license-file:   LICENSE
 build-type:     Simple
 extra-source-files:
     README.md
+    LICENSE
     ChangeLog.md
-    bin/RunAlloy.java
     bin/alloy/RunAlloy.class
-    bin/build-alloy-java.sh
     bin/org.alloytools.alloy.dist.jar
 
 source-repository head

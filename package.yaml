@@ -8,10 +8,9 @@ copyright:           "2019 Marcellus Siegburg"
 
 extra-source-files:
 - README.md
+- LICENSE
 - ChangeLog.md
-- bin/RunAlloy.java
 - bin/alloy/RunAlloy.class
-- bin/build-alloy-java.sh
 - bin/org.alloytools.alloy.dist.jar
 
 synopsis:            A simple library to call Alloy given a specification
