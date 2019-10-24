@@ -10,6 +10,7 @@ import Data.Hashable                    (hash)
 import Data.IORef                       (IORef, newIORef, readIORef)
 import Data.List                        (intercalate)
 import Data.List.Split                  (splitOn)
+import Data.Maybe                       (fromMaybe)
 import System.Directory
   (XdgDirectory (..), createDirectoryIfMissing, doesFileExist, getXdgDirectory)
 import System.Exit                      (ExitCode (..))
@@ -29,7 +30,8 @@ getInstances :: Maybe Integer -> String -> IO [String]
 getInstances maxInstances content = do
   classPath <- getClassPath
   let callAlloy = proc "java"
-        ["-cp", classPath, classPackage ++ '.' : className, show maxInstances']
+        ["-cp", classPath, classPackage ++ '.' : className,
+         show $ fromMaybe (-1) maxInstances]
   (Just hin, Just hout, Just herr, ph) <-
     createProcess callAlloy {
         std_out = CreatePipe,
@@ -42,7 +44,6 @@ getInstances maxInstances content = do
   printContentOnError ph `seq`
     fmap (intercalate "\n") . drop 1 . splitOn [begin] <$> getWholeOutput hout
   where
-    maxInstances' = maybe (-1) id maxInstances
     begin = "---INSTANCE---"
     getWholeOutput h = do
       eof <- hIsEOF h
