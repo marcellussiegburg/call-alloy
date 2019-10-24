@@ -1,0 +1,4 @@
+.stack-work/
+call-alloy.cabal
+stack.yaml.lock
+*~

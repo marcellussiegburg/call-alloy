@@ -1,0 +1,45 @@
+name:                call-alloy
+version:             0.1.0.0
+github:              "marcellussiegburg/call-alloy"
+license:             MIT
+author:              "Marcellus Siegburg"
+maintainer:          "marcellus.siegburg@uni-due.de"
+copyright:           "2019 Marcellus Siegburg"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+- bin/RunAlloy.java
+- bin/alloy/RunAlloy.class
+- bin/build-alloy-java.sh
+- bin/org.alloytools.alloy.dist.jar
+
+synopsis:            A simple library to call Alloy given a specification
+category:            Language
+
+description:         Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- bytestring
+- directory
+- file-embed
+- filepath
+- hashable
+- process
+- split
+
+library:
+  source-dirs: src
+
+tests:
+  call-alloy-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - call-alloy
+    - hspec
