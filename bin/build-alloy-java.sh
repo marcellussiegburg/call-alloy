@@ -1,1 +1,4 @@
-javac -cp alloy/Alloy-5.0.0.1.jar RunAlloy.java -d .
+#!/usr/bin/env zsh
+
+javac -cp org.alloytools.alloy.dist.jar RunAlloy.java -d .
+printf '\x30' | dd of=alloy/RunAlloy.class bs=1 seek=7 count=3 conv=notrunc
