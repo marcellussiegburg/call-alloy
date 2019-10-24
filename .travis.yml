@@ -28,6 +28,7 @@ matrix:
 
 install:
   - |
+    sudo apt install default-jre
     if [ -z "$STACK_YAML" ]; then
       ghc --version
       cabal --version
