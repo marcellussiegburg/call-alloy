@@ -4,7 +4,7 @@ language: haskell
 git:
   depth: 5
 
-cabal: "2.4"
+cabal: "3.0"
 
 cache:
   directories:
@@ -27,20 +27,21 @@ matrix:
     env: STACK_YAML="$TRAVIS_BUILD_DIR/stack.yaml"
 
 install:
+  - sudo apt install default-jre
   - |
-    sudo apt install default-jre
     if [ -z "$STACK_YAML" ]; then
       ghc --version
       cabal --version
       cabal new-update
-      cabal new-build --enable-tests --enable-benchmarks -v2 --ghc-options="-Wall -Werror"
+      cabal new-build --enable-tests --enable-benchmarks --ghc-options="-Wall"
     else
       # install stack
       curl -sSL https://get.haskellstack.org/ | sh
 
       # build project with stack
       stack --version
-      stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks
+      stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks --only-dependencies
+      stack build --system-ghc --test --bench --no-run-tests --no-run-benchmarks --ghc-options="-Wall -Werror"
     fi
 
 script:
