@@ -1,0 +1,74 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: cc104c84e5d73815e2044d695022b52d0d546f52957a4f36d2a1527941ac95f3
+
+name:           call-alloy
+version:        0.1.0.0
+synopsis:       A simple library to call Alloy given a specification
+description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
+category:       Language
+homepage:       https://github.com/marcellussiegburg/call-alloy#readme
+bug-reports:    https://github.com/marcellussiegburg/call-alloy/issues
+author:         Marcellus Siegburg
+maintainer:     marcellus.siegburg@uni-due.de
+copyright:      2019 Marcellus Siegburg
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+    bin/RunAlloy.java
+    bin/alloy/RunAlloy.class
+    bin/build-alloy-java.sh
+    bin/org.alloytools.alloy.dist.jar
+
+source-repository head
+  type: git
+  location: https://github.com/marcellussiegburg/call-alloy
+
+library
+  exposed-modules:
+      Language.Alloy.Call
+      Language.Alloy.RessourceNames
+      Language.Alloy.Ressources
+  other-modules:
+      Paths_call_alloy
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , directory
+    , file-embed
+    , filepath
+    , hashable
+    , process
+    , split
+  default-language: Haskell2010
+
+test-suite call-alloy-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Language.Alloy.CallSpec
+      Paths_call_alloy
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , bytestring
+    , call-alloy
+    , directory
+    , file-embed
+    , filepath
+    , hashable
+    , hspec
+    , process
+    , split
+  default-language: Haskell2010
