@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: bab081461f673154221082ddfd47929c9dfc838028c48beb5a7a555479fcfc7d
+-- hash: cb90623890ff4edd9f37856fc196d7ff619272da4c3519f2c2d1c082670a936a
 
 name:           call-alloy
 version:        0.1.0.0
@@ -33,9 +33,9 @@ source-repository head
 library
   exposed-modules:
       Language.Alloy.Call
+  other-modules:
       Language.Alloy.RessourceNames
       Language.Alloy.Ressources
-  other-modules:
       Paths_call_alloy
   hs-source-dirs:
       src

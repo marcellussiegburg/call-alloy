@@ -30,6 +30,8 @@ dependencies:
 
 library:
   source-dirs: src
+  exposed-modules:
+    - Language.Alloy.Call
 
 tests:
   call-alloy-test:
