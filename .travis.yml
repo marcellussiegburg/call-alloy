@@ -11,6 +11,7 @@ cache:
   - "$HOME/.cabal/store"
   - "$HOME/.stack"
   - "$TRAVIS_BUILD_DIR/.stack-work"
+  - "/opt/ghc/$GHC"
 
 matrix:
   include:
