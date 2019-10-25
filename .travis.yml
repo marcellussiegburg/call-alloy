@@ -54,10 +54,9 @@ script:
       cabal check
       mkdir -p dist
       cabal new-sdist --builddir=dist
-      cd dist
-      cabal sandbox init
-      cabal new-install $(find $PWD -name "*.tar.gz")
-      cd -
+      # cd dist
+      # cabal new-install $(find * -name "*.tar.gz")
+      # cd -
     else
       stack test --system-ghc
     fi
