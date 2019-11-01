@@ -117,7 +117,7 @@ fallbackToTempDir m = catch m $ \e ->
     login  <- getLoginName
 #endif
     let tmpDir = tmp </> show (hash login) </> appName
-    createUserDirectoriesIfMissing $ tmpDir
+    createUserDirectoriesIfMissing tmpDir
     return tmpDir
   else error $ show e
 
