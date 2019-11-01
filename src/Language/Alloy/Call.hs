@@ -11,6 +11,7 @@ These libraries will be placed into the users directory during execution.
 A requirement for this library to work is a Java Runtime Environment
 (as it is required by Alloy).
 -}
+{-# LANGUAGE CPP #-}
 module Language.Alloy.Call (
   existsInstance,
   getInstances,
@@ -26,14 +27,21 @@ import Data.List.Split                  (splitOn)
 import Data.Maybe                       (fromMaybe)
 import System.Directory
   (XdgDirectory (..), createDirectory, doesFileExist, doesDirectoryExist,
-   getXdgDirectory)
-import System.Directory.Internal
+   getTemporaryDirectory, getXdgDirectory)
+import System.Directory.Internal        (setFileMode)
+import System.Directory.Internal.Prelude
+  (catch, isDoesNotExistError)
 import System.Exit                      (ExitCode (..))
 import System.FilePath
   ((</>), (<.>), searchPathSeparator, takeDirectory)
 import System.IO                        (hClose, hGetLine, hIsEOF, hPutStr)
 import System.IO.Unsafe                 (unsafePerformIO)
 import System.Process
+#if defined(mingw32_HOST_OS)
+import System.Win32.Info                (getUserName)
+#else
+import System.Posix.User                (getLoginName)
+#endif
 
 import Language.Alloy.RessourceNames    (alloyJarName, className, classPackage)
 import Language.Alloy.Ressources        (alloyJar, classFile)
@@ -98,6 +106,21 @@ getClassPath = do
   mclassPath' <- readIORef mclassPath
   maybe readClassPath return mclassPath'
 
+fallbackToTempDir :: IO FilePath -> IO FilePath
+fallbackToTempDir m = catch m $ \e ->
+  if isDoesNotExistError e
+  then do
+    tmp    <- getTemporaryDirectory
+#if defined(mingw32_HOST_OS)
+    login  <- getUserName
+#else
+    login  <- getLoginName
+#endif
+    let tmpDir = tmp </> show (hash login) </> appName
+    createUserDirectoriesIfMissing $ tmpDir
+    return tmpDir
+  else error $ show e
+
 {-|
 Read the class path version specified in the user directory, if it is not
 current or if it does not exist, call 'createVersionFile'.
@@ -106,7 +129,7 @@ Returns the class path.
 -}
 readClassPath :: IO FilePath
 readClassPath = do
-  configDir <- getXdgDirectory XdgConfig appName
+  configDir <- fallbackToTempDir $ getXdgDirectory XdgConfig appName
   let versionFile = configDir </> "version"
   exists <- doesFileExist versionFile
   if exists
@@ -134,13 +157,15 @@ files enclosed into this library (see also 'Language.Alloy.RessourceNames' and
 -}
 createDataDir :: IO ()
 createDataDir = do
-  dataDir <- getXdgDirectory XdgData $ appName </> "dataDir"
+  dataDir <- fallbackToTempDir $ getXdgDirectory XdgData $ appName </> "dataDir"
   createUserDirectoriesIfMissing $ dataDir </> classPackage
   BS.writeFile (dataDir </> classPackage </> className <.> "class") classFile
   BS.writeFile (dataDir </> alloyJarName) alloyJar
 
 {-|
 Creates user directories using the file permissions 700.
+This function creates the specified directory and all its parent directories as
+well (if they are also missing).
 -}
 createUserDirectoriesIfMissing :: FilePath -> IO ()
 createUserDirectoriesIfMissing fp = do

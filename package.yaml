@@ -1,5 +1,5 @@
 name:                call-alloy
-version:             0.1.0.1
+version:             0.1.0.2
 github:              "marcellussiegburg/call-alloy"
 license:             MIT
 author:              "Marcellus Siegburg"
@@ -27,6 +27,15 @@ dependencies:
 - hashable
 - process
 - split
+when:
+- condition: os(windows)
+  then:
+    cpp-options: -DWINDOWS
+    dependencies:
+    - Win32
+  else:
+    dependencies:
+    - unix
 
 library:
   source-dirs: src
