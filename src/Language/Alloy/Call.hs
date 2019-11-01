@@ -25,9 +25,12 @@ import Data.List                        (intercalate)
 import Data.List.Split                  (splitOn)
 import Data.Maybe                       (fromMaybe)
 import System.Directory
-  (XdgDirectory (..), createDirectoryIfMissing, doesFileExist, getXdgDirectory)
+  (XdgDirectory (..), createDirectory, doesFileExist, doesDirectoryExist,
+   getXdgDirectory)
+import System.Directory.Internal
 import System.Exit                      (ExitCode (..))
-import System.FilePath                  ((</>), (<.>), searchPathSeparator)
+import System.FilePath
+  ((</>), (<.>), searchPathSeparator, takeDirectory)
 import System.IO                        (hClose, hGetLine, hIsEOF, hPutStr)
 import System.IO.Unsafe                 (unsafePerformIO)
 import System.Process
@@ -121,7 +124,7 @@ Create all library files within the users 'XdgDirectory' by calling
 createVersionFile :: FilePath -> FilePath -> IO ()
 createVersionFile configDir versionFile = do
   createDataDir
-  createDirectoryIfMissing True configDir
+  createUserDirectoriesIfMissing configDir
   writeFile versionFile $ show versionHash
 
 {-|
@@ -132,9 +135,21 @@ files enclosed into this library (see also 'Language.Alloy.RessourceNames' and
 createDataDir :: IO ()
 createDataDir = do
   dataDir <- getXdgDirectory XdgData $ appName </> "dataDir"
-  createDirectoryIfMissing True $ dataDir </> classPackage
+  createUserDirectoriesIfMissing $ dataDir </> classPackage
   BS.writeFile (dataDir </> classPackage </> className <.> "class") classFile
   BS.writeFile (dataDir </> alloyJarName) alloyJar
+
+{-|
+Creates user directories using the file permissions 700.
+-}
+createUserDirectoriesIfMissing :: FilePath -> IO ()
+createUserDirectoriesIfMissing fp = do
+  isDir <- doesDirectoryExist fp
+  let parent = takeDirectory fp
+  unless (isDir || parent == fp) $ do
+    createUserDirectoriesIfMissing parent
+    createDirectory fp
+    setFileMode fp (7*8*8)
 
 {-|
 Check if there exists a model for the given specification. This function calls
@@ -145,7 +160,7 @@ existsInstance
   :: String
   -- ^ The Alloy specification which should be loaded.
   -> IO Bool
-  -- ^ Whether there exists a instance (within the given scope)
+  -- ^ Whether there exists an instance (within the given scope)
 existsInstance = fmap (not . null) . getInstances (Just 1)
 
 {-|
