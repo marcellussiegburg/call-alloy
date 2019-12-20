@@ -1,5 +1,5 @@
 name:                call-alloy
-version:             0.1.0.2
+version:             0.2.0.0
 github:              "marcellussiegburg/call-alloy"
 license:             MIT
 author:              "Marcellus Siegburg"
@@ -21,10 +21,13 @@ description:         Please see the README on GitHub at <https://github.com/marc
 dependencies:
 - base >= 4.7 && < 5
 - bytestring
+- containers
 - directory
 - file-embed
 - filepath
 - hashable
+- mtl
+- parsec
 - process
 - split
 when:

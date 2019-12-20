@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 54c29a66869bf88b9365e7543b6507d23efdcb3cdac0ac437540d41f4ca0e8c0
+-- hash: 055756f33009fd3d500f570950eb2af89d43cf1a7e63eb8d74b327e2a8da6b40
 
 name:           call-alloy
-version:        0.1.0.2
+version:        0.2.0.0
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
@@ -34,6 +34,7 @@ library
   exposed-modules:
       Language.Alloy.Call
   other-modules:
+      Language.Alloy.Parser
       Language.Alloy.RessourceNames
       Language.Alloy.Ressources
       Paths_call_alloy
@@ -42,10 +43,13 @@ library
   build-depends:
       base >=4.7 && <5
     , bytestring
+    , containers
     , directory
     , file-embed
     , filepath
     , hashable
+    , mtl
+    , parsec
     , process
     , split
   if os(windows)
@@ -70,11 +74,14 @@ test-suite call-alloy-test
       base >=4.7 && <5
     , bytestring
     , call-alloy
+    , containers
     , directory
     , file-embed
     , filepath
     , hashable
     , hspec
+    , mtl
+    , parsec
     , process
     , split
   if os(windows)

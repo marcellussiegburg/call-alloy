@@ -15,9 +15,12 @@ A requirement for this library to work is a Java Runtime Environment
 module Language.Alloy.Call (
   existsInstance,
   getInstances,
+  module Parser
   ) where
 
 import qualified Data.ByteString                  as BS (writeFile)
+
+import qualified Language.Alloy.Parser            as Parser
 
 import Control.Monad                    (unless)
 import Data.Hashable                    (hash)
@@ -43,6 +46,7 @@ import System.Win32.Info                (getUserName)
 import System.Posix.User                (getLoginName)
 #endif
 
+import Language.Alloy.Parser            (AlloyInstance)
 import Language.Alloy.RessourceNames    (alloyJarName, className, classPackage)
 import Language.Alloy.Ressources        (alloyJar, classFile)
 
@@ -63,7 +67,7 @@ getInstances
   -- ^ How many instances to return 'Nothing' for all.
   -> String
   -- ^ The Alloy specification which should be loaded.
-  -> IO [String]
+  -> IO [AlloyInstance]
 getInstances maxInstances content = do
   classPath <- getClassPath
   let callAlloy = proc "java"
@@ -78,8 +82,9 @@ getInstances maxInstances content = do
   hPutStr hin content
   hClose hin
   printCallErrors herr
-  printContentOnError ph `seq`
+  instas <- printContentOnError ph `seq`
     fmap (intercalate "\n") . drop 1 . splitOn [begin] <$> getWholeOutput hout
+  return $ either (error . show) id . Parser.parseInstance <$> instas
   where
     begin = "---INSTANCE---"
     getWholeOutput h = do
