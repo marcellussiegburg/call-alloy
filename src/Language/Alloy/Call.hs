@@ -15,12 +15,11 @@ A requirement for this library to work is a Java Runtime Environment
 module Language.Alloy.Call (
   existsInstance,
   getInstances,
-  module Parser
+  module Functions,
+  module Types,
   ) where
 
 import qualified Data.ByteString                  as BS (writeFile)
-
-import qualified Language.Alloy.Parser            as Parser
 
 import Control.Monad                    (unless)
 import Data.Hashable                    (hash)
@@ -46,9 +45,12 @@ import System.Win32.Info                (getUserName)
 import System.Posix.User                (getLoginName)
 #endif
 
-import Language.Alloy.Parser            (AlloyInstance)
+import Language.Alloy.Functions         as Functions
+import Language.Alloy.Parser            (parseInstance)
 import Language.Alloy.RessourceNames    (alloyJarName, className, classPackage)
 import Language.Alloy.Ressources        (alloyJar, classFile)
+import Language.Alloy.Types             as Types
+  (AlloyInstance, AlloySig, Signature)
 
 {-# NOINLINE mclassPath #-}
 {-|
@@ -84,7 +86,7 @@ getInstances maxInstances content = do
   printCallErrors herr
   instas <- printContentOnError ph `seq`
     fmap (intercalate "\n") . drop 1 . splitOn [begin] <$> getWholeOutput hout
-  return $ either (error . show) id . Parser.parseInstance <$> instas
+  return $ either (error . show) id . parseInstance <$> instas
   where
     begin = "---INSTANCE---"
     getWholeOutput h = do
