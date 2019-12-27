@@ -49,7 +49,9 @@ library:
 tests:
   call-alloy-test:
     main:                Spec.hs
-    source-dirs:         test
+    source-dirs:
+    - src
+    - test
     ghc-options:
     - -threaded
     - -rtsopts

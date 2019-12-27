@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e6e35208501b233485cdb430464e4fdef88f2b948e3c700ca7e56369863771b4
+-- hash: 3585ba8d1d84b7d988b6fdc0cdb7917691a39aca577d4c3143aa2b8d79a3098d
 
 name:           call-alloy
 version:        0.2.0.0
@@ -68,9 +68,16 @@ test-suite call-alloy-test
   type: exitcode-stdio-1.0
   main-is: Spec.hs
   other-modules:
+      Language.Alloy.Call
+      Language.Alloy.Functions
+      Language.Alloy.Parser
+      Language.Alloy.RessourceNames
+      Language.Alloy.Ressources
+      Language.Alloy.Types
       Language.Alloy.CallSpec
       Paths_call_alloy
   hs-source-dirs:
+      src
       test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
