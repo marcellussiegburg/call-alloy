@@ -26,10 +26,11 @@ dependencies:
 - file-embed
 - filepath
 - hashable
+- lens
 - mtl
-- parsec
 - process
 - split
+- trifecta
 when:
 - condition: os(windows)
   then:

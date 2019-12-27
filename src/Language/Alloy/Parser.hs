@@ -20,13 +20,13 @@ import qualified Data.Set                         as S (fromList)
 import qualified Data.Map                         as M
   (alter, empty, insert, singleton)
 
+import Control.Applicative              ((<|>))
 import Control.Monad                    (void)
 import Control.Monad.Except             (MonadError, throwError)
+import Data.ByteString                  (ByteString)
 import Data.Functor                     (($>))
 import Data.Set                         (Set)
-import Text.Parsec
---import Text.Trifecta
-import Text.Parsec.String               (Parser)
+import Text.Trifecta
 
 import Language.Alloy.Types (
   AlloyInstance,
@@ -42,10 +42,10 @@ import Language.Alloy.Types (
 Parse an Alloy instance from a given String.
 May fail with a 'ParseError'.
 -}
-parseInstance :: (MonadError ParseError m) => String -> m AlloyInstance
-parseInstance inst = case parse alloyInstance "Alloy-Instance" inst of
-  Left l  -> throwError l
-  Right r -> return $ combineEntries r
+parseInstance :: (MonadError ErrInfo m) => ByteString -> m AlloyInstance
+parseInstance inst = case parseByteString alloyInstance mempty inst of
+  Failure l -> throwError l
+  Success r -> return $ combineEntries r
 
 combineEntries :: [Entries (,)] -> AlloyInstance
 combineEntries = foldl createOrInsert M.empty
@@ -90,14 +90,14 @@ parseRelations = char '='
 
 object :: Parser Object
 object =
-  try (Object <$> word <* char '$' <*> (read <$> many1 digit))
+  try (Object <$> word <* char '$' <*> (read <$> some digit))
   <|> try (NumberObject <$> int)
   <|> NamedObject <$> word
 
 int :: Parser Int
 int = fmap read $ (++)
   <$> (try (string "-") <|> pure "")
-  <*> many1 digit
+  <*> some digit
 
 word :: Parser String
 word = (:)

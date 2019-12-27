@@ -12,6 +12,7 @@ A requirement for this library to work is a Java Runtime Environment
 (as it is required by Alloy).
 -}
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE OverloadedStrings #-}
 module Language.Alloy.Call (
   existsInstance,
   getInstances,
@@ -19,12 +20,14 @@ module Language.Alloy.Call (
   module Types,
   ) where
 
-import qualified Data.ByteString                  as BS (writeFile)
+import qualified Data.ByteString                  as BS
+  (hGetLine, intercalate, writeFile)
 
 import Control.Monad                    (unless)
+import Control.Lens.Internal.ByteString (unpackStrict8)
+import Data.ByteString                  (ByteString)
 import Data.Hashable                    (hash)
 import Data.IORef                       (IORef, newIORef, readIORef)
-import Data.List                        (intercalate)
 import Data.List.Split                  (splitOn)
 import Data.Maybe                       (fromMaybe)
 import System.Directory
@@ -36,7 +39,7 @@ import System.Directory.Internal.Prelude
 import System.Exit                      (ExitCode (..))
 import System.FilePath
   ((</>), (<.>), searchPathSeparator, takeDirectory)
-import System.IO                        (hClose, hGetLine, hIsEOF, hPutStr)
+import System.IO                        (hClose, hIsEOF, hPutStr)
 import System.IO.Unsafe                 (unsafePerformIO)
 import System.Process
 #if defined(mingw32_HOST_OS)
@@ -85,22 +88,23 @@ getInstances maxInstances content = do
   hClose hin
   printCallErrors herr
   instas <- printContentOnError ph `seq`
-    fmap (intercalate "\n") . drop 1 . splitOn [begin] <$> getWholeOutput hout
+    fmap (BS.intercalate "\n") . drop 1 . splitOn [begin] <$> getWholeOutput hout
   return $ either (error . show) id . parseInstance <$> instas
   where
+    begin :: ByteString
     begin = "---INSTANCE---"
     getWholeOutput h = do
       eof <- hIsEOF h
       if eof
         then return []
-        else (:) <$> hGetLine h <*> getWholeOutput h
+        else (:) <$> BS.hGetLine h <*> getWholeOutput h
     printContentOnError ph = do
       code <- waitForProcess ph
       unless (code == ExitSuccess)
         $ fail $ "Failed parsing your file:\n" <> content
     printCallErrors err = do
       errors <- getWholeOutput err
-      unless (null errors) $ fail $ intercalate "\n" errors
+      unless (null errors) $ fail $ unpackStrict8 $ BS.intercalate "\n" errors
 
 {-|
 Check if the class path was determined already, if so use it, otherwise call
