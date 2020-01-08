@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cdb72adae977c73bfa3b3926a5723f28734e824d02d65c99668aaf88ebf1b1f2
+-- hash: dd057700e60aba8aee8cf2105303394e8c7934479b6057c438b6a3c423f514b4
 
 name:           call-alloy
 version:        0.2.0.1
@@ -44,17 +44,18 @@ library
       src
   build-depends:
       base >=4.7 && <5
-    , bytestring
-    , containers
-    , directory
-    , file-embed
-    , filepath
-    , hashable
-    , lens
-    , mtl
-    , process
-    , split
-    , trifecta
+    , bytestring >=0.10 && <0.11
+    , containers >=0.6 && <0.7
+    , directory >=1.3 && <1.4
+    , file-embed >=0.0.11 && <0.1
+    , filepath >=1.4 && <1.5
+    , hashable >=1.2 && <1.4
+    , lens >=4.17 && <4.19
+    , mtl >=2.2 && <2.3
+    , process >=1.6 && <1.7
+    , split >=0.2 && <0.3
+    , trifecta >=2 && <2.2
+    , unix >=2.7 && <2.8
   if os(windows)
     cpp-options: -DWINDOWS
     build-depends:
@@ -82,19 +83,20 @@ test-suite call-alloy-test
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.7 && <5
-    , bytestring
+    , bytestring >=0.10 && <0.11
     , call-alloy
-    , containers
-    , directory
-    , file-embed
-    , filepath
-    , hashable
+    , containers >=0.6 && <0.7
+    , directory >=1.3 && <1.4
+    , file-embed >=0.0.11 && <0.1
+    , filepath >=1.4 && <1.5
+    , hashable >=1.2 && <1.4
     , hspec
-    , lens
-    , mtl
-    , process
-    , split
-    , trifecta
+    , lens >=4.17 && <4.19
+    , mtl >=2.2 && <2.3
+    , process >=1.6 && <1.7
+    , split >=0.2 && <0.3
+    , trifecta >=2 && <2.2
+    , unix >=2.7 && <2.8
   if os(windows)
     cpp-options: -DWINDOWS
     build-depends:
