@@ -53,7 +53,7 @@ import Language.Alloy.Parser            (parseInstance)
 import Language.Alloy.RessourceNames    (alloyJarName, className, classPackage)
 import Language.Alloy.Ressources        (alloyJar, classFile)
 import Language.Alloy.Types             as Types
-  (AlloyInstance, AlloySig, Entries, Signature)
+  (AlloyInstance, AlloySig, Entries, Object, Signature)
 
 {-# NOINLINE mclassPath #-}
 {-|
