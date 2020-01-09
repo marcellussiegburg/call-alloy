@@ -23,8 +23,8 @@ module Language.Alloy.Call (
 import qualified Data.ByteString                  as BS
   (hGetLine, intercalate, writeFile)
 
-import Control.Monad                    (unless)
 import Control.Lens.Internal.ByteString (unpackStrict8)
+import Control.Monad                    (unless)
 import Data.ByteString                  (ByteString)
 import Data.Hashable                    (hash)
 import Data.IORef                       (IORef, newIORef, readIORef)
@@ -89,8 +89,11 @@ getInstances maxInstances content = do
   printCallErrors herr
   instas <- printContentOnError ph `seq`
     fmap (BS.intercalate "\n") . drop 1 . splitOn [begin] <$> getWholeOutput hout
+  lastSafe instas `seq` waitForProcess ph
   return $ either (error . show) id . parseInstance <$> instas
   where
+    lastSafe [] = ""
+    lastSafe xs = last xs
     begin :: ByteString
     begin = "---INSTANCE---"
     getWholeOutput h = do

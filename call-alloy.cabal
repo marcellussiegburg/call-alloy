@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: dd057700e60aba8aee8cf2105303394e8c7934479b6057c438b6a3c423f514b4
+-- hash: 0c7e1e94c5ed3129f7ed43b636385fa7b1a05d8dde27cf1b6a6f36e73376b4d6
 
 name:           call-alloy
-version:        0.2.0.1
+version:        0.2.0.2
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
