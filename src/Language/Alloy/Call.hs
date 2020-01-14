@@ -22,7 +22,10 @@ module Language.Alloy.Call (
 
 import qualified Data.ByteString                  as BS
   (hGetLine, intercalate, writeFile)
+import qualified Data.ByteString.Char8            as BS (unlines)
 
+import Control.Concurrent
+  (forkIO, killThread, newEmptyMVar, putMVar, takeMVar)
 import Control.Lens.Internal.ByteString (unpackStrict8)
 import Control.Monad                    (unless)
 import Data.ByteString                  (ByteString)
@@ -39,9 +42,11 @@ import System.Directory.Internal.Prelude
 import System.Exit                      (ExitCode (..))
 import System.FilePath
   ((</>), (<.>), searchPathSeparator, takeDirectory)
-import System.IO                        (hClose, hIsEOF, hPutStr)
+import System.IO
+  (BufferMode (..), hClose, hFlush, hIsEOF, hPutStr, hSetBuffering)
 import System.IO.Unsafe                 (unsafePerformIO)
 import System.Process
+  (CreateProcess (..), StdStream (..), createProcess, proc, waitForProcess)
 #if defined(mingw32_HOST_OS)
 import System.Win32.Info                (getUserName)
 #else
@@ -64,8 +69,8 @@ mclassPath = unsafePerformIO (newIORef Nothing)
 
 {-|
 This function may be used to get all model instances for a given Alloy
-specification. It calls Alloy via a Java interface and returns the raw instance
-answers as list of 'String's.
+specification. It calls Alloy via a Java interface and parses the raw instance
+answers before returning the resulting list of 'AlloyInstance's.
 -}
 getInstances
   :: Maybe Integer
@@ -84,16 +89,19 @@ getInstances maxInstances content = do
         std_in  = CreatePipe,
         std_err = CreatePipe
       }
+  pout <- listenForOutput hout
+  perr <- listenForOutput herr
+  hSetBuffering hin NoBuffering
   hPutStr hin content
+  hFlush hin
   hClose hin
-  printCallErrors herr
-  instas <- printContentOnError ph `seq`
-    fmap (BS.intercalate "\n") . drop 1 . splitOn [begin] <$> getWholeOutput hout
-  lastSafe instas `seq` waitForProcess ph
+  out <- getOutput pout
+  err <- getOutput perr
+  printContentOnError ph
+  unless (null err) $ fail $ unpackStrict8 $ BS.unlines err
+  let instas = fmap (BS.intercalate "\n") $ drop 1 $ splitOn [begin] out
   return $ either (error . show) id . parseInstance <$> instas
   where
-    lastSafe [] = ""
-    lastSafe xs = last xs
     begin :: ByteString
     begin = "---INSTANCE---"
     getWholeOutput h = do
@@ -104,10 +112,15 @@ getInstances maxInstances content = do
     printContentOnError ph = do
       code <- waitForProcess ph
       unless (code == ExitSuccess)
-        $ fail $ "Failed parsing your file:\n" <> content
-    printCallErrors err = do
-      errors <- getWholeOutput err
-      unless (null errors) $ fail $ unpackStrict8 $ BS.intercalate "\n" errors
+        $ fail $ "Failed parsing the Alloy code:\n" <> content
+    listenForOutput h = do
+      mvar <- newEmptyMVar
+      pid <- forkIO $ getWholeOutput h >>= putMVar mvar
+      return (pid, mvar)
+    getOutput (pid, mvar) = do
+      output <- takeMVar mvar
+      killThread pid
+      return output
 
 {-|
 Check if the class path was determined already, if so use it, otherwise call

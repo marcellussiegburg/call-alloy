@@ -4,10 +4,10 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0c7e1e94c5ed3129f7ed43b636385fa7b1a05d8dde27cf1b6a6f36e73376b4d6
+-- hash: 5f40f17f800e12b3cb98ac3b1383ac04a52cd1570b5329b12f3fffb03bdf46ab
 
 name:           call-alloy
-version:        0.2.0.2
+version:        0.2.0.3
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
@@ -55,14 +55,13 @@ library
     , process >=1.6 && <1.7
     , split >=0.2 && <0.3
     , trifecta >=2 && <2.2
-    , unix >=2.7 && <2.8
   if os(windows)
     cpp-options: -DWINDOWS
     build-depends:
         Win32
   else
     build-depends:
-        unix
+        unix >=2.7 && <2.8
   default-language: Haskell2010
 
 test-suite call-alloy-test
@@ -96,12 +95,11 @@ test-suite call-alloy-test
     , process >=1.6 && <1.7
     , split >=0.2 && <0.3
     , trifecta >=2 && <2.2
-    , unix >=2.7 && <2.8
   if os(windows)
     cpp-options: -DWINDOWS
     build-depends:
         Win32
   else
     build-depends:
-        unix
+        unix >=2.7 && <2.8
   default-language: Haskell2010
