@@ -37,7 +37,7 @@ public class RunAlloy {
         for (Command command: module.getAllCommands()) {
             int i = 0;
             A4Solution ans = TranslateAlloyToKodkod.execute_command(reporter, module.getAllReachableSigs(), command, options);
-            while (maxRuns != i && ans.satisfiable()) {
+            while (maxRuns != i++ && ans.satisfiable()) {
                 if (ans.satisfiable()) {
                     System.out.print(ans);
                 }
