@@ -91,7 +91,9 @@ getInstances maxInstances content = do
       }
   pout <- listenForOutput hout
   perr <- listenForOutput herr
+#ifndef mingw32_HOST_OS
   hSetBuffering hin NoBuffering
+#endif
   hPutStr hin content
   hFlush hin
   hClose hin
@@ -112,7 +114,7 @@ getInstances maxInstances content = do
     printContentOnError ph = do
       code <- waitForProcess ph
       unless (code == ExitSuccess)
-        $ fail $ "Failed parsing the Alloy code:\n" <> content
+        $ putStrLn $ "Failed parsing the Alloy code:\n" <> content
     listenForOutput h = do
       mvar <- newEmptyMVar
       pid <- forkIO $ getWholeOutput h >>= putMVar mvar
@@ -201,7 +203,9 @@ createUserDirectoriesIfMissing fp = do
   unless (isDir || parent == fp) $ do
     createUserDirectoriesIfMissing parent
     createDirectory fp
+#ifndef mingw32_HOST_OS
     setFileMode fp (7*8*8)
+#endif
 
 {-|
 Check if there exists a model for the given specification. This function calls
