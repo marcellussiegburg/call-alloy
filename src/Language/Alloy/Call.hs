@@ -209,7 +209,7 @@ createUserDirectoriesIfMissing fp = do
 
 {-|
 Check if there exists a model for the given specification. This function calls
-Alloy retrieving one instance. If there is no such instance, it returns 'false'.
+Alloy retrieving one instance. If there is no such instance, it returns 'False'.
 This function calls 'getInstances'.
 -}
 existsInstance
