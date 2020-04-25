@@ -27,7 +27,7 @@ A signature with all its objects and relations.
 type AlloySig      = Entry Map Set
 
 {-|
-A collection of Signatures with associated entries.
+A collection of signatures with associated entries.
 -}
 type Entries a = a Signature (Entry a Set)
 
