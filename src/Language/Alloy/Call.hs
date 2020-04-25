@@ -7,7 +7,7 @@ Maintainer  : marcellus.siegburg@uni-due.de
 
 This module provides basic functionality to interact with Alloy.
 This library contains Alloy and an (internal) interface to interact with it.
-These libraries will be placed into the users directory during execution.
+These libraries will be placed into the user's directory during execution.
 A requirement for this library to work is a Java Runtime Environment
 (as it is required by Alloy).
 -}
@@ -74,7 +74,7 @@ answers before returning the resulting list of 'AlloyInstance's.
 -}
 getInstances
   :: Maybe Integer
-  -- ^ How many instances to return 'Nothing' for all.
+  -- ^ How many instances to return; 'Nothing' for all.
   -> String
   -- ^ The Alloy specification which should be loaded.
   -> IO [AlloyInstance]
@@ -209,14 +209,14 @@ createUserDirectoriesIfMissing fp = do
 
 {-|
 Check if there exists a model for the given specification. This function calls
-Alloy retrieving one instance. If there is no such instance, it returns false.
+Alloy retrieving one instance. If there is no such instance, it returns 'false'.
 This function calls 'getInstances'.
 -}
 existsInstance
   :: String
   -- ^ The Alloy specification which should be loaded.
   -> IO Bool
-  -- ^ Whether there exists an instance (within the given scope)
+  -- ^ Whether there exists an instance (within the relevant scope).
 existsInstance = fmap (not . null) . getInstances (Just 1)
 
 {-|
