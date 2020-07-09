@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 0534c64ea3ef38876fc7fc965609f9d06865cdfa4b66fb3c23a3d01805827ce3
+-- hash: 33a2e0dbedf2a0706151dee65955f7ff90ca5552213fed9ab1f3632f012f90e4
 
 name:           call-alloy
-version:        0.2.0.4
+version:        0.2.0.5
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
@@ -25,6 +25,9 @@ extra-source-files:
     ChangeLog.md
     bin/alloy/RunAlloy.class
     bin/org.alloytools.alloy.dist.jar
+    bin/commons-cli/commons-cli-1.4.jar
+    bin/commons-cli/NOTICE.txt
+    bin/commons-cli/LICENSE.txt
 
 source-repository head
   type: git

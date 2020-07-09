@@ -1,5 +1,5 @@
 name:                call-alloy
-version:             0.2.0.4
+version:             0.2.0.5
 github:              "marcellussiegburg/call-alloy"
 license:             MIT
 author:              "Marcellus Siegburg"
@@ -12,6 +12,9 @@ extra-source-files:
 - ChangeLog.md
 - bin/alloy/RunAlloy.class
 - bin/org.alloytools.alloy.dist.jar
+- bin/commons-cli/commons-cli-1.4.jar
+- bin/commons-cli/NOTICE.txt
+- bin/commons-cli/LICENSE.txt
 
 synopsis:            A simple library to call Alloy given a specification
 category:            Language

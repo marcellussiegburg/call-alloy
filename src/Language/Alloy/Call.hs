@@ -14,8 +14,11 @@ A requirement for this library to work is a Java Runtime Environment
 {-# LANGUAGE CPP #-}
 {-# LANGUAGE OverloadedStrings #-}
 module Language.Alloy.Call (
+  CallAlloyConfig (maxInstances, noOverflow),
+  defaultCallAlloyConfig,
   existsInstance,
   getInstances,
+  getInstancesWith,
   module Functions,
   module Types,
   ) where
@@ -55,10 +58,33 @@ import System.Posix.User                (getLoginName)
 
 import Language.Alloy.Functions         as Functions
 import Language.Alloy.Parser            (parseInstance)
-import Language.Alloy.RessourceNames    (alloyJarName, className, classPackage)
-import Language.Alloy.Ressources        (alloyJar, classFile)
+import Language.Alloy.RessourceNames (
+  alloyJarName, className, classPackage, commonsCliJarName
+  )
+import Language.Alloy.Ressources        (alloyJar, classFile, commonsCliJar)
 import Language.Alloy.Types             as Types
   (AlloyInstance, AlloySig, Entries, Object, Signature)
+
+{-|
+Configuration for calling alloy.
+-}
+data CallAlloyConfig = CallAlloyConfig {
+  -- | maximal number of instances to retrieve ('Nothing' for all)
+  maxInstances :: Maybe Integer,
+  -- | wheather to not overflow when calculating numbers within Alloy
+  noOverflow   :: Bool
+  }
+
+{-|
+Default configuration for calling Alloy. Defaults to:
+ * retrieve all instances
+ * do not overflow
+-}
+defaultCallAlloyConfig :: CallAlloyConfig
+defaultCallAlloyConfig = CallAlloyConfig {
+  maxInstances = Nothing,
+  noOverflow   = True
+  }
 
 {-# NOINLINE mclassPath #-}
 {-|
@@ -78,11 +104,28 @@ getInstances
   -> String
   -- ^ The Alloy specification which should be loaded.
   -> IO [AlloyInstance]
-getInstances maxInstances content = do
+getInstances maxIs = getInstancesWith defaultCallAlloyConfig {
+  maxInstances = maxIs
+  }
+
+{-|
+This function may be used to get all model instances for a given Alloy
+specification. It calls Alloy via a Java interface and parses the raw instance
+answers before returning the resulting list of 'AlloyInstance's.
+Parameters are set using a 'CallAlloyConfig'.
+-}
+getInstancesWith
+  :: CallAlloyConfig
+  -- ^ The configuration to be used.
+  -> String
+  -- ^ The Alloy specification which should be loaded.
+  -> IO [AlloyInstance]
+getInstancesWith config content = do
   classPath <- getClassPath
   let callAlloy = proc "java"
-        ["-cp", classPath, classPackage ++ '.' : className,
-         show $ fromMaybe (-1) maxInstances]
+        $ ["-cp", classPath, classPackage ++ '.' : className,
+           "-i", show $ fromMaybe (-1) $ maxInstances config]
+        ++ ["-o" | not $ noOverflow config]
   (Just hin, Just hout, Just herr, ph) <-
     createProcess callAlloy {
         std_out = CreatePipe,
@@ -168,6 +211,7 @@ readClassPath = do
     else createVersionFile configDir versionFile
   dataDir <- getXdgDirectory XdgData $ appName </> "dataDir"
   return $ dataDir ++ searchPathSeparator : dataDir </> alloyJarName
+    ++ searchPathSeparator : dataDir </> commonsCliJarName
 
 {-|
 Create all library files within the users 'XdgDirectory' by calling
@@ -190,6 +234,7 @@ createDataDir = do
   createUserDirectoriesIfMissing $ dataDir </> classPackage
   BS.writeFile (dataDir </> classPackage </> className <.> "class") classFile
   BS.writeFile (dataDir </> alloyJarName) alloyJar
+  BS.writeFile (dataDir </> commonsCliJarName) commonsCliJar
 
 {-|
 Creates user directories using the file permissions 700.
@@ -231,7 +276,8 @@ Used to determine possible source code and Alloy version changes across multiple
 versions of this library.
 -}
 versionHash :: Int
-versionHash = hash $ alloyHash + classFileHash
+versionHash = hash $ alloyHash + commonsCliHash + classFileHash
   where
     alloyHash = hash alloyJar
+    commonsCliHash = hash commonsCliJar
     classFileHash = hash classFile
