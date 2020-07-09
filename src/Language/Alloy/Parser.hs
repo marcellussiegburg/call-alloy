@@ -63,16 +63,15 @@ entry = do
   entryAnnotation <- try (string "skolem " $> Just Skolem) <|> pure Nothing
   entrySignature <- sig
   (entrySignature,)
-    <$> (Entry
-         <$> pure entryAnnotation
-         <*> ((,)
+    <$> (Entry entryAnnotation
+         <$> ((,)
               <$> ((string "<:" *> word) <|> pure "")
               <*> parseRelations <* (void newline <|> eof)))
 
 sig :: Parser Signature
 sig =
   try (Signature <$> (Just <$> word) <* char '/' <*> word)
-  <|> Signature <$> pure Nothing <*> word
+  <|> Signature Nothing <$> word
 
 parseRelations :: Parser (Relation Set)
 parseRelations = char '='
