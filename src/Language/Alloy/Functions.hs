@@ -43,14 +43,14 @@ scoped :: String -> String -> Signature
 scoped = Signature . Just
 
 {-|
-Create an unscoped Signature given its name.
+Create an unscoped 'Signature' given its name.
 -}
 unscoped :: String -> Signature
 unscoped = Signature Nothing
 
 {-|
 Retrieve a set of objects of a given 'AlloySig'.
-Successful if the signatures relation is a set (or empty).
+Successful if the signature's relation is a set (or empty).
 -}
 getSingle
   :: (IsString s, MonadError s m)
@@ -61,7 +61,7 @@ getSingle = lookupRel single
 
 {-|
 Retrieve a binary relation of objects of a given 'AlloySig'.
-Successful if the signatures relation is binary (or empty).
+Successful if the signature's relation is binary (or empty).
 -}
 getDouble
   :: (IsString s, MonadError s m)
@@ -72,7 +72,7 @@ getDouble = lookupRel double
 
 {-|
 Retrieve a ternary relation of objects of a given 'AlloySig'.
-Successful if the signatures relation is ternary (or empty).
+Successful if the signature's relation is ternary (or empty).
 -}
 getTriple
   :: (IsString s, MonadError s m)
@@ -88,7 +88,7 @@ binaryToMap bin = M.fromList
 
 {-|
 Transforms a relation into a Mapping.
-Is only successful (i.e. returns 'return' if the given transformation function is
+Is only successful (i.e. returns 'return') if the given transformation function is
 able to map the given values injectively.
 -}
 relToMap
@@ -116,7 +116,7 @@ lookupRel kind rel e = case M.lookup rel (relation e) of
   Just r  -> kind r
 
 {-|
-Lookup a signature within a given Alloy Instance.
+Lookup a signature within a given Alloy instance.
 -}
 lookupSig
   :: (IsString s, MonadError s m)
@@ -129,7 +129,7 @@ lookupSig s insta = case M.lookup s insta of
   Just e   -> return e
 
 {-|
-Retrieve an objects name.
+Retrieve an object's name.
 -}
 objectName :: Object -> String
 objectName o = case o of
