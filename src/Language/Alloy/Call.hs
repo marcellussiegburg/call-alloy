@@ -66,7 +66,10 @@ import Language.Alloy.Types             as Types
   (AlloyInstance, AlloySig, Entries, Object, Signature)
 
 {-|
-Configuration for calling alloy.
+Configuration for calling alloy. These are:
+
+ * maximal number of instances to retrieve ('Nothing' for all)
+ * wheather to not overflow when calculating numbers within Alloy
 -}
 data CallAlloyConfig = CallAlloyConfig {
   -- | maximal number of instances to retrieve ('Nothing' for all)
@@ -77,6 +80,7 @@ data CallAlloyConfig = CallAlloyConfig {
 
 {-|
 Default configuration for calling Alloy. Defaults to:
+
  * retrieve all instances
  * do not overflow
 -}

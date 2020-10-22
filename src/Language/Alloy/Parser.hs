@@ -40,7 +40,7 @@ import Language.Alloy.Types (
 
 {-|
 Parse an Alloy instance from a given String.
-May fail with a 'ParseError'.
+May fail with 'ErrInfo'.
 -}
 parseInstance :: (MonadError ErrInfo m) => ByteString -> m AlloyInstance
 parseInstance inst = case parseByteString alloyInstance mempty inst of
@@ -101,4 +101,4 @@ int = fmap read $ (++)
 word :: Parser String
 word = (:)
   <$> (letter <|> char '$')
-  <*> many (letter <|> digit <|> char '_')
+  <*> many (letter <|> digit <|> char '_' <|> char '\'')
