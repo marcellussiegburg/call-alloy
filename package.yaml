@@ -4,7 +4,7 @@ github:              "marcellussiegburg/call-alloy"
 license:             MIT
 author:              "Marcellus Siegburg"
 maintainer:          "marcellus.siegburg@uni-due.de"
-copyright:           "2019 Marcellus Siegburg"
+copyright:           "2019-2020 Marcellus Siegburg"
 
 extra-source-files:
 - README.md
