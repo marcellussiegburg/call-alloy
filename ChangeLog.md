@@ -4,6 +4,10 @@
 
 ## Released changes
 
+### 0.2.1.0
+
+- enable to abort instance generation early by using timeout
+
 ### 0.2.0.6
 
 - allow parsing `'` as part of words.
