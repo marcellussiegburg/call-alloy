@@ -1,0 +1,10 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "call-alloy:lib"
+
+    - path: "./src"
+      component: "call-alloy:test:call-alloy-test"
+
+    - path: "./test"
+      component: "call-alloy:test:call-alloy-test"
