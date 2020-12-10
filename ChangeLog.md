@@ -4,6 +4,10 @@
 
 ## Released changes
 
+### 0.2.1.1
+
+- fix errors due to long Alloy code by starting timeout after transferring code
+
 ### 0.2.1.0
 
 - enable to abort instance generation early by using timeout

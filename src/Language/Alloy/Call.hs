@@ -150,13 +150,13 @@ getInstancesWith config content = do
       }
   pout <- listenForOutput hout
   perr <- listenForOutput herr
-  maybe (return ()) (void . startTimeout hin hout herr ph) $ timeout config
 #ifndef mingw32_HOST_OS
   hSetBuffering hin NoBuffering
 #endif
   hPutStr hin content
   hFlush hin
   hClose hin
+  maybe (return ()) (void . startTimeout hin hout herr ph) $ timeout config
   out <- getOutput pout
   err <- getOutput perr
   printContentOnError ph
