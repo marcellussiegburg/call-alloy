@@ -1,13 +1,13 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: db841f71ac1e6d568aa7c8d4f6574b06cdf77fea00a6cf3ae0c74880c12eb083
+-- hash: a6397f9e52550d7e13e9e9b7b80fdbdc15cd29ab28396f6c2ad8dbd8cf0774b2
 
 name:           call-alloy
-version:        0.2.1.0
+version:        0.2.1.1
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
