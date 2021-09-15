@@ -33,9 +33,9 @@ import Control.Concurrent (
   forkIO, killThread, newEmptyMVar, putMVar, takeMVar, threadDelay,
   )
 import Control.Exception                (IOException)
-import Control.Lens.Internal.ByteString (unpackStrict8)
 import Control.Monad                    (unless, void, when)
 import Data.ByteString                  (ByteString)
+import Data.ByteString.Char8            (unpack)
 import Data.Hashable                    (hash)
 import Data.IORef                       (IORef, newIORef, readIORef)
 import Data.List.Split                  (splitOn)
@@ -160,7 +160,7 @@ getInstancesWith config content = do
   out <- getOutput pout
   err <- getOutput perr
   printContentOnError ph
-  unless (null err) $ fail $ unpackStrict8 $ BS.unlines err
+  unless (null err) $ fail $ unpack $ BS.unlines err
   let instas = fmap (BS.intercalate "\n") $ drop 1 $ splitOn [begin] out
   let finstas = filterLast (not . (partialInstance `BS.isSuffixOf`)) instas
   return $ either (error . show) id . parseInstance <$> finstas

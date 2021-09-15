@@ -29,14 +29,13 @@ category:            Language
 description:         Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 
 dependencies:
-- base                        >= 4.7 && < 5
-- bytestring                  >= 0.10 && < 0.12
+- base                        >= 4.12 && < 5
+- bytestring                  >= 0.10.4 && < 0.12
 - containers                  >= 0.6 && < 0.7
 - directory                   >= 1.3 && < 1.4
 - filepath                    >= 1.4 && < 1.5
 - file-embed                  >= 0.0.11 && < 0.1
 - hashable                    >= 1.2 && < 1.4
-- lens                        >= 4.17 && < 4.20
 - mtl                         >= 2.2 && < 2.3
 - process                     >= 1.6 && < 1.7
 - split                       >= 0.2 && < 0.3
@@ -46,7 +45,7 @@ when:
   then:
     cpp-options: -DWINDOWS
     dependencies:
-    - Win32                   >= 2.5 && < 2.11
+    - Win32                   >= 2.5 && < 2.14
   else:
     dependencies:
     - unix                    >= 2.7 && < 2.8
