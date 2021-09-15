@@ -15,6 +15,13 @@ extra-source-files:
 - bin/commons-cli/commons-cli-1.4.jar
 - bin/commons-cli/NOTICE.txt
 - bin/commons-cli/LICENSE.txt
+ghc-options:
+  - -Wall
+  - -Wincomplete-uni-patterns
+  - -Wincomplete-record-updates
+  - -Widentities
+  - -Wredundant-constraints
+  - -Werror
 
 synopsis:            A simple library to call Alloy given a specification
 category:            Language
