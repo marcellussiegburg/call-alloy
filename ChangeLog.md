@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- deprecate 'relToMap'
+
 ## Released changes
 
 ### 0.2.1.1

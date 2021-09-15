@@ -81,16 +81,15 @@ getTriple
   -> m (Set (Object, Object, Object))
 getTriple = lookupRel triple
 
+{-|
+Transforms a relation into a Mapping.
+-}
 binaryToMap :: (Ord k, Ord v) => Set (k, v) -> Map k (Set v)
 binaryToMap bin = M.fromList
   [(fst (head gs), S.fromList $ snd <$> gs)
   | gs <- groupBy ((==) `on` fst) $ S.toList bin]
 
-{-|
-Transforms a relation into a Mapping.
-Is only successful (i.e. returns 'return') if the given transformation function is
-able to map the given values injectively.
--}
+{-# DEPRECATED relToMap "use binaryToMap instead" #-}
 relToMap
   :: (IsString s, MonadError s m, Ord k, Ord v)
   => (a -> (k, v))
