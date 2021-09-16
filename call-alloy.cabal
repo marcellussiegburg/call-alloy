@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: e49ae7af47ee532f9eb8b49c72570109723160f4053e5c052b35eacaf8f92bb4
+-- hash: 13e14bd6d91550e41caf3dcd3d17a10e70b4b3e98b9f8f131339a527dc3c11da
 
 name:           call-alloy
 version:        0.2.1.1
@@ -36,8 +36,10 @@ source-repository head
 library
   exposed-modules:
       Language.Alloy.Call
+      Language.Alloy.Debug
   other-modules:
       Language.Alloy.Functions
+      Language.Alloy.Internal.Call
       Language.Alloy.Parser
       Language.Alloy.RessourceNames
       Language.Alloy.Ressources
@@ -72,7 +74,9 @@ test-suite call-alloy-test
   main-is: Spec.hs
   other-modules:
       Language.Alloy.Call
+      Language.Alloy.Debug
       Language.Alloy.Functions
+      Language.Alloy.Internal.Call
       Language.Alloy.Parser
       Language.Alloy.RessourceNames
       Language.Alloy.Ressources

@@ -3,6 +3,7 @@
 ## Unreleased changes
 
 - deprecate 'relToMap'
+- provide functions for returning raw output of instances
 
 ## Released changes
 

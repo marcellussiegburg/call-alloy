@@ -54,6 +54,7 @@ library:
   source-dirs: src
   exposed-modules:
     - Language.Alloy.Call
+    - Language.Alloy.Debug
 
 tests:
   call-alloy-test:
