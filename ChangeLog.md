@@ -4,6 +4,8 @@
 
 - deprecate 'relToMap'
 - provide functions for returning raw output of instances
+- provide functions for typed retrieval
+- deprecate 'getSingle', 'getDouble', 'getTriple', 'objectName'
 
 ## Released changes
 
