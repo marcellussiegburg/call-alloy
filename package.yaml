@@ -1,5 +1,5 @@
 name:                call-alloy
-version:             0.2.1.1
+version:             0.2.2.0
 github:              "marcellussiegburg/call-alloy"
 license:             MIT
 author:              "Marcellus Siegburg"
@@ -21,7 +21,6 @@ ghc-options:
   - -Wincomplete-record-updates
   - -Widentities
   - -Wredundant-constraints
-  - -Werror
 
 synopsis:            A simple library to call Alloy given a specification
 category:            Language
