@@ -11,6 +11,7 @@ Unless reexported, these types are considered as internal.
 module Language.Alloy.Types (
   AlloyInstance, AlloySig, Annotation (..),
   Entries, Entry (..), Object (..), Relation (..), Signature (..),
+  showSignature,
   ) where
 
 import Data.Map                         (Map)
@@ -38,6 +39,10 @@ data Signature = Signature {
     scope    :: Maybe String,
     sigName  :: String
   } deriving (Eq, Ord, Show)
+
+showSignature :: Signature -> String
+showSignature s =
+  maybe "" (++ "/") (scope s) ++ sigName s
 
 {-|
 A concrete instance of an Alloy signature.

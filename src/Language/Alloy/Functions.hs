@@ -20,11 +20,11 @@ module Language.Alloy.Functions (
   ) where
 
 import qualified Data.Set                         as S (fromList, size, toList)
-import qualified Data.Map                         as M (fromList, lookup)
+import qualified Data.Map                         as M (fromList, lookup, keys)
 
 import Control.Monad.Except             (MonadError, throwError)
 import Data.Function                    (on)
-import Data.List                        (groupBy)
+import Data.List                        (groupBy, intercalate)
 import Data.Map                         (Map)
 import Data.Set                         (Set)
 import Data.String                      (IsString, fromString)
@@ -36,6 +36,7 @@ import Language.Alloy.Types (
   Object (..),
   Relation (..),
   Signature (..),
+  showSignature,
   )
 
 {-|
@@ -238,6 +239,7 @@ lookupRel
 lookupRel kind rel e = case M.lookup rel (relation e) of
   Nothing -> throwError $ fromString $ "relation " ++ fromString rel
     ++ " is missing in the Alloy instance"
+    ++ " available are: " ++ intercalate ", " (M.keys $ relation e)
   Just r  -> kind r
 
 {-|
@@ -249,8 +251,9 @@ lookupSig
   -> AlloyInstance
   -> m AlloySig
 lookupSig s insta = case M.lookup s insta of
-  Nothing -> throwError $ fromString $ maybe "" (++ "/") (scope s) ++ sigName s
+  Nothing -> throwError $ fromString $ showSignature s
     ++ " is missing in the Alloy instance"
+    ++ " available are: \"" ++ intercalate "\", " (showSignature <$> M.keys insta)
   Just e   -> return e
 
 {-# DEPRECATED objectName "use the typed versions of get... e.g. getSingleAs instead of getSingle" #-}
