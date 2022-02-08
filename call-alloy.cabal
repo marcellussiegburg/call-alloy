@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ba6c263bec8a6ad1491f00b1f8cb6f6fb3aa6ccba047922bd0e2cc16b816a31b
+-- hash: 007d5c30dbb23cdc1650fbd4697dd67561cb3a99bfa7fbfe73c1eef637d53d0c
 
 name:           call-alloy
 version:        0.2.2.0
@@ -53,6 +53,7 @@ library
     , bytestring >=0.10.4 && <0.12
     , containers ==0.6.*
     , directory ==1.3.*
+    , extra ==1.7.*
     , file-embed >=0.0.11 && <0.1
     , filepath ==1.4.*
     , hashable >=1.2 && <1.5
@@ -93,6 +94,7 @@ test-suite call-alloy-test
     , call-alloy
     , containers ==0.6.*
     , directory ==1.3.*
+    , extra ==1.7.*
     , file-embed >=0.0.11 && <0.1
     , filepath ==1.4.*
     , hashable >=1.2 && <1.5

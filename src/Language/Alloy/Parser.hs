@@ -25,6 +25,9 @@ import Control.Monad                    (void)
 import Control.Monad.Except             (MonadError, throwError)
 import Data.ByteString                  (ByteString)
 import Data.Functor                     (($>))
+import Data.List                        (intercalate)
+import Data.List.Extra                  (unsnoc)
+import Data.Maybe                       (fromJust)
 import Data.Set                         (Set)
 import Text.Trifecta
 
@@ -69,9 +72,11 @@ entry = do
               <*> parseRelations <* (void newline <|> eof)))
 
 sig :: Parser Signature
-sig =
-  try (Signature <$> (Just <$> word) <* char '/' <*> word)
-  <|> Signature Nothing <$> word
+sig = do
+  xs' <- slashedWord
+  return $ case fromJust $ unsnoc xs' of
+    ([], x) -> Signature Nothing x
+    (xs, x) -> Signature (Just $ intercalate "/" $ take (length xs') xs) x
 
 parseRelations :: Parser (Relation Set)
 parseRelations = char '='
@@ -89,7 +94,7 @@ parseRelations = char '='
 
 object :: Parser Object
 object =
-  try (Object <$> word <* char '$' <*> (read <$> some digit))
+  try (Object . intercalate "/" <$> slashedWord <* char '$' <*> (read <$> some digit))
   <|> try (NumberObject <$> int)
   <|> NamedObject <$> word
 
@@ -97,6 +102,9 @@ int :: Parser Int
 int = fmap read $ (++)
   <$> (try (string "-") <|> pure "")
   <*> some digit
+
+slashedWord :: Parser [String]
+slashedWord = word `sepBy1` char '/'
 
 word :: Parser String
 word = (:)
