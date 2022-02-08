@@ -9,6 +9,8 @@ i.e. as Alloy provides them.
 module Language.Alloy.Debug (
   getRawInstances,
   getRawInstancesWith,
+  parseInstance,
   ) where
 
 import Language.Alloy.Internal.Call     (getRawInstances, getRawInstancesWith)
+import Language.Alloy.Parser            (parseInstance)
