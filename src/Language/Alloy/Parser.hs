@@ -81,6 +81,7 @@ sig = do
 parseRelations :: Parser (Relation Set)
 parseRelations = char '='
   *> (try (string "{}" $> EmptyRelation)
+      <|> (Id <$> try object)
       <|> fmap Triple (try $ sep tripleRel)
       <|> fmap Double (try $ sep doubleRel)
       <|> fmap Single (sep singleRel))

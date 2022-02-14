@@ -65,6 +65,7 @@ The collection may be a singleton, a set, a list, ...
 -}
 data Relation a =
     EmptyRelation
+  | Id Object
   | Single (a Object)
   | Double (a (Object, Object))
   | Triple (a (Object, Object, Object))

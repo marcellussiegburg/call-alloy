@@ -11,7 +11,7 @@ Furthermore, it provides functions to handle these parsed instances.
 -}
 module Language.Alloy.Functions (
   getSingle, getDouble, getTriple,
-  getSingleAs, getDoubleAs, getTripleAs,
+  getIdentityAs, getSingleAs, getDoubleAs, getTripleAs,
   int, object,
   lookupSig,
   objectName,
@@ -108,6 +108,23 @@ specifyObject f o = case o of
   NamedObject g -> error $ "there is no way of converting Object "
     ++ g
     ++ "\nPlease open an issue at https://github.com/marcellussiegburg/call-alloy stating what you tried to attempt"
+
+{-|
+Retrieve a single value of a given 'AlloySig'.
+The Value will be created by applying the given mapping function
+from object name and 'Int' to value.
+The mapping has to be injective (for all expected cases).
+Successful if the signature's relation is a single value.
+-}
+getIdentityAs
+  :: (MonadError s m, IsString s)
+  => String
+  -> (String -> Int -> m b)
+  -> Entry Map a
+  -> m b
+getIdentityAs s f inst = do
+  e <- lookupRel identity s inst
+  specifyObject f e
 
 {-|
 Retrieve a set of values of a given 'AlloySig'.
@@ -265,6 +282,13 @@ objectName o = case o of
   Object s n     -> s ++ '$' : show n
   NumberObject n -> show n
   NamedObject n  -> n
+
+identity
+  :: (IsString s, MonadError s m)
+  => Relation a
+  -> m Object
+identity (Id r) = return r
+identity _      = throwError "Relation is (unexpectedly) not exactly a single element"
 
 single
   :: (IsString s, MonadError s m, Monoid (a Object))
