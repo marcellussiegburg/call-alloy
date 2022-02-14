@@ -18,7 +18,7 @@ module Language.Alloy.Internal.Call (
   ) where
 
 import qualified Data.ByteString                  as BS
-  (hGetLine, intercalate, isSuffixOf, writeFile)
+  (hGetLine, intercalate, isSuffixOf, stripPrefix, writeFile)
 import qualified Data.ByteString.Char8            as BS (unlines)
 
 import Control.Concurrent (
@@ -154,7 +154,8 @@ getRawInstancesWith config content = do
   out <- getOutput pout
   err <- getOutput perr
   printContentOnError ph
-  unless (null err) $ fail $ unpack $ BS.unlines err
+  let err' = removeInfoPrefix err
+  unless (null err') $ fail $ unpack $ BS.unlines err'
   let instas = fmap (BS.intercalate "\n") $ drop 1 $ splitOn [begin] out
   return $ filterLast (not . (partialInstance `BS.isSuffixOf`)) instas
   where
@@ -184,6 +185,25 @@ getRawInstancesWith config content = do
       output <- takeMVar mvar
       killThread pid
       return output
+
+{-|
+Removes lines such as
+
+@
+[main] INFO kodkod.engine.config.Reporter - detecting symmetries ...
+[main] INFO kodkod.engine.config.Reporter - detected 16 equivalence classes of atoms ...
+[main] INFO kodkod.engine.config.Reporter - optimizing bounds and formula (breaking predicate symmetries, inlining, skolemizing) ...
+[main] INFO kodkod.engine.config.Reporter - translating to boolean ...
+[main] INFO kodkod.engine.config.Reporter - generating lex-leader symmetry breaking predicate ...
+@
+
+which seem to be appearing since Alloy-6.0.0
+-}
+removeInfoPrefix :: [ByteString] -> [ByteString]
+removeInfoPrefix (x:xs)
+  | Just _ <- BS.stripPrefix "[main] INFO" x
+  = removeInfoPrefix xs
+removeInfoPrefix xs = xs
 
 {-|
 Start a new process that aborts execution by closing all handles and
