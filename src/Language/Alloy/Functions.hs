@@ -10,21 +10,17 @@ This module exports basic types in order to work with parsed Alloy instances.
 Furthermore, it provides functions to handle these parsed instances.
 -}
 module Language.Alloy.Functions (
-  getSingle, getDouble, getTriple,
   getIdentityAs, getSingleAs, getDoubleAs, getTripleAs,
   int, object,
   lookupSig,
-  objectName,
-  relToMap,
   scoped, unscoped,
   ) where
 
-import qualified Data.Set                         as S (fromList, size, toList)
-import qualified Data.Map                         as M (fromList, lookup, keys)
+import qualified Data.Set                         as S (fromList, toList)
+import qualified Data.Map                         as M (lookup, keys)
 
 import Control.Monad.Except             (MonadError, throwError)
-import Data.Function                    (on)
-import Data.List                        (groupBy, intercalate)
+import Data.List                        (intercalate)
 import Data.Map                         (Map)
 import Data.Set                         (Set)
 import Data.String                      (IsString, fromString)
@@ -140,20 +136,8 @@ getSingleAs
   -> AlloySig
   -> m (Set a)
 getSingleAs s f inst = do
-  set <- getSingle s inst
+  set <- lookupRel single s inst
   traverseSet (specifyObject f) set
-
-{-# DEPRECATED getSingle "use the typed version getSingleAs instead" #-}
-{-|
-Retrieve a set of objects of a given 'AlloySig'.
-Successful if the signature's relation is a set (or empty).
--}
-getSingle
-  :: (IsString s, MonadError s m)
-  => String
-  -> AlloySig
-  -> m (Set Object)
-getSingle = lookupRel single
 
 {-|
 Retrieve a binary relation of values of given 'AlloySig'.
@@ -170,24 +154,12 @@ getDoubleAs
   -> AlloySig
   -> m (Set (a, b))
 getDoubleAs s f g inst = do
-  set <- getDouble s inst
+  set <- lookupRel double s inst
   traverseSet applyMapping set
   where
     applyMapping (x, y) = (,)
       <$> specifyObject f x
       <*> specifyObject g y
-
-{-# DEPRECATED getDouble "use the typed version getDoubleAs instead" #-}
-{-|
-Retrieve a binary relation of objects of a given 'AlloySig'.
-Successful if the signature's relation is binary (or empty).
--}
-getDouble
-  :: (IsString s, MonadError s m)
-  => String
-  -> AlloySig
-  -> m (Set (Object, Object))
-getDouble = lookupRel double
 
 {-|
 Retrieve a ternary relation of values of a given 'AlloySig'.
@@ -205,47 +177,13 @@ getTripleAs
   -> AlloySig
   -> m (Set (a, b, c))
 getTripleAs s f g h inst = do
-  set <- getTriple s inst
+  set <- lookupRel triple s inst
   traverseSet applyMapping set
   where
     applyMapping (x, y, z) = (,,)
       <$> specifyObject f x
       <*> specifyObject g y
       <*> specifyObject h z
-
-{-# DEPRECATED getTriple "use the typed version getTripleAs instead" #-}
-{-|
-Retrieve a ternary relation of objects of a given 'AlloySig'.
-Successful if the signature's relation is ternary (or empty).
--}
-getTriple
-  :: (IsString s, MonadError s m)
-  => String
-  -> AlloySig
-  -> m (Set (Object, Object, Object))
-getTriple = lookupRel triple
-
-{-|
-Transforms a relation into a Mapping.
--}
-binaryToMap :: (Ord k, Ord v) => Set (k, v) -> Map k (Set v)
-binaryToMap bin = M.fromList
-  [(fst (head gs), S.fromList $ snd <$> gs)
-  | gs <- groupBy ((==) `on` fst) $ S.toList bin]
-
-{-# DEPRECATED relToMap "use binaryToMap instead" #-}
-relToMap
-  :: (IsString s, MonadError s m, Ord k, Ord v)
-  => (a -> (k, v))
-  -> Set a
-  -> m (Map k (Set v))
-relToMap f rel
-  | S.size map' == length rel' = return $ binaryToMap map'
-  | otherwise                  =
-    throwError "relToMap: The performed transformation is not injective."
-  where
-    rel' = S.toList rel
-    map' = S.fromList $ fmap f rel'
 
 lookupRel
   :: (IsString s, MonadError s m)
@@ -272,16 +210,6 @@ lookupSig s insta = case M.lookup s insta of
     ++ " is missing in the Alloy instance"
     ++ " available are: \"" ++ intercalate "\", " (showSignature <$> M.keys insta)
   Just e   -> return e
-
-{-# DEPRECATED objectName "use the typed versions of get... e.g. getSingleAs instead of getSingle" #-}
-{-|
-Retrieve an object's name.
--}
-objectName :: Object -> String
-objectName o = case o of
-  Object s n     -> s ++ '$' : show n
-  NumberObject n -> show n
-  NamedObject n  -> n
 
 identity
   :: (IsString s, MonadError s m)
