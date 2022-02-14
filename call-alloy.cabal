@@ -26,6 +26,8 @@ extra-source-files:
     bin/commons-cli/commons-cli-1.5.0.jar
     bin/commons-cli/NOTICE.txt
     bin/commons-cli/LICENSE.txt
+    bin/slf4j/slf4j-simple-1.7.36.jar
+    bin/slf4j/LICENSE
 
 source-repository head
   type: git

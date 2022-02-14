@@ -56,9 +56,14 @@ import System.Posix.User                (getLoginName)
 #endif
 
 import Language.Alloy.RessourceNames (
-  alloyJarName, className, classPackage, commonsCliJarName
+  alloyJarName, className, classPackage, commonsCliJarName, slf4jJarName,
   )
-import Language.Alloy.Ressources        (alloyJar, classFile, commonsCliJar)
+import Language.Alloy.Ressources (
+  alloyJar,
+  classFile,
+  commonsCliJar,
+  slf4jJar,
+  )
 
 {-|
 Configuration for calling alloy. These are:
@@ -246,6 +251,7 @@ readClassPath = do
   dataDir <- getXdgDirectory XdgData $ appName </> "dataDir"
   return $ dataDir ++ searchPathSeparator : dataDir </> alloyJarName
     ++ searchPathSeparator : dataDir </> commonsCliJarName
+    ++ searchPathSeparator : dataDir </> slf4jJarName
 
 {-|
 Create all library files within the users 'XdgDirectory' by calling
@@ -269,6 +275,7 @@ createDataDir = do
   BS.writeFile (dataDir </> classPackage </> className <.> "class") classFile
   BS.writeFile (dataDir </> alloyJarName) alloyJar
   BS.writeFile (dataDir </> commonsCliJarName) commonsCliJar
+  BS.writeFile (dataDir </> slf4jJarName) slf4jJar
 
 {-|
 Creates user directories using the file permissions 700.
@@ -298,8 +305,9 @@ Used to determine possible source code and Alloy version changes across multiple
 versions of this library.
 -}
 versionHash :: Int
-versionHash = hash $ alloyHash + commonsCliHash + classFileHash
+versionHash = hash $ alloyHash + commonsCliHash + slf4jHash + classFileHash
   where
     alloyHash = hash alloyJar
     commonsCliHash = hash commonsCliJar
     classFileHash = hash classFile
+    slf4jHash = hash slf4jJar
