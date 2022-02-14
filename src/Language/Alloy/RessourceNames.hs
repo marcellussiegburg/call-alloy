@@ -9,7 +9,7 @@ alloyJarName :: String
 alloyJarName = "org.alloytools.alloy.dist.jar"
 
 commonsCliJarName :: String
-commonsCliJarName = "commons-cli-1.4.jar"
+commonsCliJarName = "commons-cli-1.5.0.jar"
 
 className :: String
 className = "RunAlloy"

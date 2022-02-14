@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-JARS=commons-cli/commons-cli-1.4.jar:org.alloytools.alloy.dist.jar
+JARS=commons-cli/commons-cli-1.5.0.jar:org.alloytools.alloy.dist.jar
 
 docker build -t build-alloy-java .
 docker run --mount src="$(pwd)",target=/work,type=bind build-alloy-java cp /usr/lib/jvm/java-1.7.0-openjdk-1.7.0.241.x86_64/jre/lib/rt.jar /work

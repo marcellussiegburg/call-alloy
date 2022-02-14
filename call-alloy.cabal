@@ -3,8 +3,6 @@ cabal-version: 1.12
 -- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
---
--- hash: 007d5c30dbb23cdc1650fbd4697dd67561cb3a99bfa7fbfe73c1eef637d53d0c
 
 name:           call-alloy
 version:        0.2.2.0
@@ -25,7 +23,7 @@ extra-source-files:
     ChangeLog.md
     bin/alloy/RunAlloy.class
     bin/org.alloytools.alloy.dist.jar
-    bin/commons-cli/commons-cli-1.4.jar
+    bin/commons-cli/commons-cli-1.5.0.jar
     bin/commons-cli/NOTICE.txt
     bin/commons-cli/LICENSE.txt
 
