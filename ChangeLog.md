@@ -4,6 +4,14 @@
 
 ## Released changes
 
+### 0.3
+
+- upgrade to Alloy 6.0.0
+- allow slashes in object names
+- allow identity relations
+- improve feedback on misspelled/missing relation and signature names
+- remove 'relToMap'
+
 ### 0.2.2.0
 
 - deprecate 'relToMap'

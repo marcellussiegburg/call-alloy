@@ -1,10 +1,10 @@
 name:                call-alloy
-version:             0.2.2.0
+version:             0.3
 github:              "marcellussiegburg/call-alloy"
 license:             MIT
 author:              "Marcellus Siegburg"
 maintainer:          "marcellus.siegburg@uni-due.de"
-copyright:           "2019-2020 Marcellus Siegburg"
+copyright:           "2019-2022 Marcellus Siegburg"
 
 extra-source-files:
 - README.md
