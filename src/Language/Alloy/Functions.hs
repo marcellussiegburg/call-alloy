@@ -194,7 +194,7 @@ lookupRel
 lookupRel kind rel e = case M.lookup rel (relation e) of
   Nothing -> throwError $ fromString $ "relation " ++ fromString rel
     ++ " is missing in the Alloy instance"
-    ++ " available are: " ++ intercalate ", " (M.keys $ relation e)
+    ++ "; available are: " ++ intercalate ", " (M.keys $ relation e)
   Just r  -> kind r
 
 {-|
@@ -208,7 +208,7 @@ lookupSig
 lookupSig s insta = case M.lookup s insta of
   Nothing -> throwError $ fromString $ showSignature s
     ++ " is missing in the Alloy instance"
-    ++ " available are: \"" ++ intercalate "\", " (showSignature <$> M.keys insta)
+    ++ "; available are: \"" ++ intercalate "\", " (showSignature <$> M.keys insta)
   Just e   -> return e
 
 identity
