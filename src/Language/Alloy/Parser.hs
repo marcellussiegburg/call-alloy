@@ -57,8 +57,14 @@ combineEntries = foldl createOrInsert M.empty
     alterSig e Nothing  = e { relation = uncurry M.singleton $ relation e}
     alterSig e (Just y) = y { relation = uncurry M.insert (relation e) (relation y) }
 
+crlf :: Parser Char
+crlf = char '\r' *> char '\n'
+
+endOfLine :: Parser Char
+endOfLine = newline <|> crlf
+
 alloyInstance :: Parser [Entries (,)]
-alloyInstance = (try (void $ string "---INSTANCE---" *> newline) <|> return ())
+alloyInstance = (try (void $ string "---INSTANCE---" *> endOfLine) <|> return ())
   *> many entry
 
 entry :: Parser (Entries (,))
@@ -69,7 +75,7 @@ entry = do
     <$> (Entry entryAnnotation
          <$> ((,)
               <$> ((string "<:" *> word) <|> pure "")
-              <*> parseRelations <* (void newline <|> eof)))
+              <*> parseRelations <* (void endOfLine <|> eof)))
 
 sig :: Parser Signature
 sig = do

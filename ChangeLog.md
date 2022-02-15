@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- support CRLF at line end
+
 ## Released changes
 
 ### 0.3
