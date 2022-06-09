@@ -64,8 +64,12 @@ endOfLine :: Parser Char
 endOfLine = newline <|> crlf
 
 alloyInstance :: Parser [Entries (,)]
-alloyInstance = (try (void $ string "---INSTANCE---" *> endOfLine) <|> return ())
-  *> many entry
+alloyInstance = (++)
+  <$> entrySection "---INSTANCE---"
+  <*> entrySection "------State 0-------"
+  where
+    entrySection x = (try (void $ string x *> endOfLine) <|> return ())
+      *> many entry
 
 entry :: Parser (Entries (,))
 entry = do

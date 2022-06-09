@@ -2,9 +2,12 @@
 
 ## Unreleased changes
 
-- support CRLF at line end
-
 ## Released changes
+
+### 0.3.0.1
+
+- support "State0" line in retrieved instances (introduced by Alloy 6)
+- support CRLF at line end
 
 ### 0.3
 
