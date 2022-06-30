@@ -17,8 +17,12 @@ module Language.Alloy.Internal.Call (
   getRawInstancesWith,
   ) where
 
-import qualified Data.ByteString                  as BS
-  (hGetLine, intercalate, isSuffixOf, stripPrefix, writeFile)
+import qualified Data.ByteString                  as BS (
+  hGetLine,
+  intercalate,
+  stripPrefix,
+  writeFile,
+  )
 import qualified Data.ByteString.Char8            as BS (unlines)
 
 import Control.Concurrent (
@@ -154,15 +158,14 @@ getRawInstancesWith config content = do
   out <- getOutput pout
   err <- getOutput perr
   printContentOnError ph
-  let err' = removeInfoPrefix err
+  let err' = removeInfoLines err
   unless (null err') $ fail $ unpack $ BS.unlines err'
-  let instas = fmap (BS.intercalate "\n") $ drop 1 $ splitOn [begin] out
-  return $ filterLast (not . (partialInstance `BS.isSuffixOf`)) instas
+  return $ fmap (BS.intercalate "\n")
+    $ filterLast ((/= partialInstance) . last)
+    $ drop 1 $ splitOn [begin] out
   where
     begin :: ByteString
     begin = "---INSTANCE---"
-    partialInstance :: ByteString
-    partialInstance = "---PARTIAL_INSTANCE---"
     filterLast _ []     = []
     filterLast p x@[_]  = filter p x
     filterLast p (x:xs) = x:filterLast p xs
@@ -186,6 +189,9 @@ getRawInstancesWith config content = do
       killThread pid
       return output
 
+partialInstance :: ByteString
+partialInstance = "---PARTIAL_INSTANCE---"
+
 {-|
 Removes lines such as
 
@@ -197,13 +203,21 @@ Removes lines such as
 [main] INFO kodkod.engine.config.Reporter - generating lex-leader symmetry breaking predicate ...
 @
 
+and
+
+@
+PARTIAL_INSTANCE
+@
+
 which seem to be appearing since Alloy-6.0.0
 -}
-removeInfoPrefix :: [ByteString] -> [ByteString]
-removeInfoPrefix (x:xs)
+removeInfoLines :: [ByteString] -> [ByteString]
+removeInfoLines (x:xs)
   | Just _ <- BS.stripPrefix "[main] INFO" x
-  = removeInfoPrefix xs
-removeInfoPrefix xs = xs
+  = removeInfoLines xs
+  | x == partialInstance
+  = removeInfoLines xs
+removeInfoLines xs = xs
 
 {-|
 Start a new process that aborts execution by closing all handles and

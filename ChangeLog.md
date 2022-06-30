@@ -4,6 +4,10 @@
 
 ## Released changes
 
+### 0.3.0.2
+
+- fix runtime error on PARTIAL_INSTANCE
+
 ### 0.3.0.1
 
 - support "State0" line in retrieved instances (introduced by Alloy 6)
