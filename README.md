@@ -1,4 +1,4 @@
-# `call-alloy` [![Build Status](https://travis-ci.org/marcellussiegburg/call-alloy.svg?branch=master)](https://travis-ci.org/marcellussiegburg/call-alloy)
+# `call-alloy` [![Haskell CI](https://github.com/marcellussiegburg/call-alloy/workflows/Haskell%20CI/badge.svg)](https://github.com/marcellussiegburg/call-alloy/actions?query=workflow%3A%22Haskell+CI%22+branch%3Amaster)
 
 This is a simple library to call [Alloy](http://alloytools.org) given a specification.
 This package includes a simple Java Library to make an API call to the Alloy Library.
