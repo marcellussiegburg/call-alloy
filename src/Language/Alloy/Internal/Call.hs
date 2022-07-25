@@ -206,6 +206,12 @@ Removes lines such as
 and
 
 @
+[main] WARN kodkod.engine.config.Reporter - Temporal formula: will be reduced to possibly unsound static version.
+@
+
+and
+
+@
 PARTIAL_INSTANCE
 @
 
@@ -214,6 +220,8 @@ which seem to be appearing since Alloy-6.0.0
 removeInfoLines :: [ByteString] -> [ByteString]
 removeInfoLines (x:xs)
   | Just _ <- BS.stripPrefix "[main] INFO" x
+  = removeInfoLines xs
+  | Just _ <- BS.stripPrefix "[main] WARN" x
   = removeInfoLines xs
   | x == partialInstance
   = removeInfoLines xs

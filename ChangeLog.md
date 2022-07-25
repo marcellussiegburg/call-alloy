@@ -4,6 +4,10 @@
 
 ## Released changes
 
+### 0.3.0.3
+
+- fix runtime error on WARN
+
 ### 0.3.0.2
 
 - fix runtime error on PARTIAL_INSTANCE
