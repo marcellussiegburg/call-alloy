@@ -1,8 +1,8 @@
 # `call-alloy` [![Haskell CI](https://github.com/marcellussiegburg/call-alloy/workflows/Haskell%20CI/badge.svg)](https://github.com/marcellussiegburg/call-alloy/actions?query=workflow%3A%22Haskell+CI%22+branch%3Amaster)
 
 This is a simple library to call [Alloy](http://alloytools.org) given a specification.
-This package includes a simple Java Library to make an API call to the Alloy Library.
-Alloy is included (as JAR file) within this library as well.
+This package installs a simple Java Library to make an API call to the Alloy Library.
+Alloy is installed (as JAR file) alongside this library as well.
 
 ## Requirements
 
@@ -15,10 +15,7 @@ Alloy is included (as JAR file) within this library as well.
 
 The Java interface to get Alloy instances as well as the
 [Alloy Jar](https://github.com/AlloyTools/org.alloytools.alloy/releases/download/v5.1.0/org.alloytools.alloy.dist.jar)
-file are baked into this library.
-
-On every call the application checks the [`XdgDirectory`](https://hackage.haskell.org/package/directory/docs/System-Directory.html#t:XdgDirectory) if the libraries exist in a current version.
-If not they are placed there together with a version identifier.
+file are installed together with this library using usual cabal means (data directory).
 
 ## The library in action
 

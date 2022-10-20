@@ -21,7 +21,6 @@ import qualified Data.ByteString                  as BS (
   hGetLine,
   intercalate,
   stripPrefix,
-  writeFile,
   )
 import qualified Data.ByteString.Char8            as BS (unlines)
 
@@ -33,41 +32,30 @@ import Control.Exception                (IOException)
 import Control.Monad                    (unless, void, when)
 import Data.ByteString                  (ByteString)
 import Data.ByteString.Char8            (unpack)
-import Data.Hashable                    (hash)
-import Data.IORef                       (IORef, newIORef, readIORef)
+import Data.List                        (intercalate)
 import Data.List.Split                  (splitOn)
 import Data.Maybe                       (fromMaybe)
-import System.Directory
-  (XdgDirectory (..), createDirectory, doesFileExist, doesDirectoryExist,
-   getTemporaryDirectory, getXdgDirectory)
-import System.Directory.Internal        (setFileMode)
 import System.Directory.Internal.Prelude
-  (catch, isDoesNotExistError)
+  (catch)
 import System.Exit                      (ExitCode (..))
 import System.FilePath
-  ((</>), (<.>), searchPathSeparator, takeDirectory)
+  (searchPathSeparator)
 import System.IO
   (BufferMode (..), Handle, hClose, hFlush, hIsEOF, hPutStr, hSetBuffering)
-import System.IO.Unsafe                 (unsafePerformIO)
 import System.Process (
   CreateProcess (..), StdStream (..), ProcessHandle,
   createProcess, proc, terminateProcess, waitForProcess,
   )
-#if defined(mingw32_HOST_OS)
-import System.Win32.Info                (getUserName)
-#else
-import System.Posix.User                (getLoginName)
-#endif
 
 import Language.Alloy.RessourceNames (
-  alloyJarName, className, classPackage, commonsCliJarName, slf4jJarName,
+  className, classPackage,
   )
 import Language.Alloy.Ressources (
   alloyJar,
-  classFile,
   commonsCliJar,
   slf4jJar,
   )
+import Paths_call_alloy                 (getDataDir)
 
 {-|
 Configuration for calling alloy. These are:
@@ -79,12 +67,12 @@ Configuration for calling alloy. These are:
 -}
 data CallAlloyConfig = CallAlloyConfig {
   -- | maximal number of instances to retrieve ('Nothing' for all)
-  maxInstances :: Maybe Integer,
+  maxInstances :: !(Maybe Integer),
   -- | whether to not overflow when calculating numbers within Alloy
-  noOverflow   :: Bool,
+  noOverflow   :: !Bool,
   -- | the time in microseconds after which to forcibly kill Alloy
   --   ('Nothing' for never)
-  timeout      :: Maybe Int
+  timeout      :: !(Maybe Int)
   }
 
 {-|
@@ -99,13 +87,6 @@ defaultCallAlloyConfig = CallAlloyConfig {
   noOverflow   = True,
   timeout      = Nothing
   }
-
-{-# NOINLINE mclassPath #-}
-{-|
-'IORef' for storing the class path.
--}
-mclassPath :: IORef (Maybe FilePath)
-mclassPath = unsafePerformIO (newIORef Nothing)
 
 {-|
 This function may be used to get all raw model instances for a given Alloy
@@ -249,107 +230,14 @@ startTimeout i o e ph t = forkIO $ do
   hClose i
 
 {-|
-Check if the class path was determined already, if so use it, otherwise call
-'readClassPath'.
+Get the class path of all files in the data directory.
 
 Returns the class path.
 -}
 getClassPath :: IO FilePath
-getClassPath = do
-  mclassPath' <- readIORef mclassPath
-  maybe readClassPath return mclassPath'
-
-fallbackToTempDir :: IO FilePath -> IO FilePath
-fallbackToTempDir m = catch m $ \e ->
-  if isDoesNotExistError e
-  then do
-    tmp    <- getTemporaryDirectory
-#if defined(mingw32_HOST_OS)
-    login  <- getUserName
-#else
-    login  <- getLoginName
-#endif
-    let tmpDir = tmp </> show (hash login) </> appName
-    createUserDirectoriesIfMissing tmpDir
-    return tmpDir
-  else error $ show e
-
-{-|
-Read the class path version specified in the user directory, if it is not
-current or if it does not exist, call 'createVersionFile'.
-
-Returns the class path.
--}
-readClassPath :: IO FilePath
-readClassPath = do
-  configDir <- fallbackToTempDir $ getXdgDirectory XdgConfig appName
-  let versionFile = configDir </> "version"
-  exists <- doesFileExist versionFile
-  if exists
-    then do
-    version <- read <$> readFile versionFile
-    unless (version == versionHash) $ createVersionFile configDir versionFile
-    else createVersionFile configDir versionFile
-  dataDir <- getXdgDirectory XdgData $ appName </> "dataDir"
-  return $ dataDir ++ searchPathSeparator : dataDir </> alloyJarName
-    ++ searchPathSeparator : dataDir </> commonsCliJarName
-    ++ searchPathSeparator : dataDir </> slf4jJarName
-
-{-|
-Create all library files within the users 'XdgDirectory' by calling
-'createDataDir' then place the current version number into a configuration File.
--}
-createVersionFile :: FilePath -> FilePath -> IO ()
-createVersionFile configDir versionFile = do
-  createDataDir
-  createUserDirectoriesIfMissing configDir
-  writeFile versionFile $ show versionHash
-
-{-|
-Create all library files within the users 'XdgDirectory' based on the source
-files enclosed into this library (see also 'Language.Alloy.RessourceNames' and
-'Language.Alloy.Ressources').
--}
-createDataDir :: IO ()
-createDataDir = do
-  dataDir <- fallbackToTempDir $ getXdgDirectory XdgData $ appName </> "dataDir"
-  createUserDirectoriesIfMissing $ dataDir </> classPackage
-  BS.writeFile (dataDir </> classPackage </> className <.> "class") classFile
-  BS.writeFile (dataDir </> alloyJarName) alloyJar
-  BS.writeFile (dataDir </> commonsCliJarName) commonsCliJar
-  BS.writeFile (dataDir </> slf4jJarName) slf4jJar
-
-{-|
-Creates user directories using the file permissions 700.
-This function creates the specified directory and all its parent directories as
-well (if they are also missing).
--}
-createUserDirectoriesIfMissing :: FilePath -> IO ()
-createUserDirectoriesIfMissing fp = do
-  isDir <- doesDirectoryExist fp
-  let parent = takeDirectory fp
-  unless (isDir || parent == fp) $ do
-    createUserDirectoriesIfMissing parent
-    createDirectory fp
-#ifndef mingw32_HOST_OS
-    setFileMode fp (7*8*8)
-#endif
-
-{-|
-The application name (used to store data in a specific directory.
--}
-appName :: String
-appName = "call-alloy"
-
-{-# INLINE versionHash #-}
-{-|
-Used to determine possible source code and Alloy version changes across multiple
-versions of this library.
--}
-versionHash :: Int
-versionHash = hash $ alloyHash + commonsCliHash + slf4jHash + classFileHash
+getClassPath =
+  concatPaths <$> getDataDir <*> alloyJar <*> commonsCliJar <*> slf4jJar
   where
-    alloyHash = hash alloyJar
-    commonsCliHash = hash commonsCliJar
-    classFileHash = hash classFile
-    slf4jHash = hash slf4jJar
+    concatPaths w x y z = intercalate
+      [searchPathSeparator]
+      [w, x, y, z]

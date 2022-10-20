@@ -1,27 +1,25 @@
-{-# LANGUAGE TemplateHaskell #-}
 module Language.Alloy.Ressources (
   alloyJar,
-  classFile,
   commonsCliJar,
   slf4jJar,
   ) where
 
-import Data.ByteString                  (ByteString)
-import Data.FileEmbed                   (embedFile)
-import System.FilePath                  ((</>), (<.>))
+import Data.Functor                     ((<&>))
+import System.FilePath                  ((</>))
 
 import Language.Alloy.RessourceNames (
-  alloyJarName, className, classPackage, commonsCliJarName, slf4jJarName,
+  alloyJarName, commonsCliJarName, slf4jJarName,
   )
+import Paths_call_alloy                 (getDataDir)
 
-alloyJar :: ByteString
-alloyJar = $(embedFile $ "bin" </> alloyJarName)
+prependDataDir :: FilePath -> IO FilePath
+prependDataDir xs = getDataDir <&> (</> xs)
 
-commonsCliJar :: ByteString
-commonsCliJar = $(embedFile $ "bin" </> "commons-cli" </> commonsCliJarName)
+alloyJar :: IO FilePath
+alloyJar = prependDataDir alloyJarName
 
-slf4jJar :: ByteString
-slf4jJar = $(embedFile $ "bin" </> "slf4j" </> slf4jJarName)
+commonsCliJar :: IO FilePath
+commonsCliJar = prependDataDir ("commons-cli" </> commonsCliJarName)
 
-classFile :: ByteString
-classFile = $(embedFile $ "bin" </> classPackage </> className <.> "class")
+slf4jJar :: IO FilePath
+slf4jJar = prependDataDir ("slf4j" </> slf4jJarName)

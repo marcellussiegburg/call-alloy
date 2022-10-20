@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- provide required Java libraries in package data directory
+
 ## Released changes
 
 ### 0.3.0.3
