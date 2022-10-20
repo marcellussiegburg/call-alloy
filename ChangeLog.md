@@ -3,6 +3,8 @@
 ## Unreleased changes
 
 - provide required Java libraries in package data directory
+- use async for process interaction
+- terminate calls to Java properly (even on interrupts)
 
 ## Released changes
 

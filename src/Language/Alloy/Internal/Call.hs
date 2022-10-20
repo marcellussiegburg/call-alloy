@@ -25,18 +25,21 @@ import qualified Data.ByteString                  as BS (
 import qualified Data.ByteString.Char8            as BS (unlines)
 
 import Control.Concurrent (
-  ThreadId,
-  forkIO, killThread, newEmptyMVar, putMVar, takeMVar, threadDelay,
+  threadDelay,
   )
-import Control.Exception                (IOException)
-import Control.Monad                    (unless, void, when)
+import Control.Concurrent.Async (
+  concurrently,
+  mapConcurrently_,
+  wait,
+  withAsync
+  )
+import Control.Exception                (IOException, bracket, catch)
+import Control.Monad                    (unless, when)
 import Data.ByteString                  (ByteString)
 import Data.ByteString.Char8            (unpack)
 import Data.List                        (intercalate)
 import Data.List.Split                  (splitOn)
 import Data.Maybe                       (fromMaybe)
-import System.Directory.Internal.Prelude
-  (catch)
 import System.Exit                      (ExitCode (..))
 import System.FilePath
   (searchPathSeparator)
@@ -44,6 +47,7 @@ import System.IO
   (BufferMode (..), Handle, hClose, hFlush, hIsEOF, hPutStr, hSetBuffering)
 import System.Process (
   CreateProcess (..), StdStream (..), ProcessHandle,
+  cleanupProcess,
   createProcess, proc, terminateProcess, waitForProcess,
   )
 
@@ -104,6 +108,24 @@ getRawInstances maxIs = getRawInstancesWith defaultCallAlloyConfig {
   }
 
 {-|
+Creates an Alloy process using the given config.
+-}
+callAlloyWith
+  :: CallAlloyConfig
+  -> IO (Maybe Handle, Maybe Handle, Maybe Handle, ProcessHandle)
+callAlloyWith config = do
+  classPath <- getClassPath
+  let callAlloy = proc "java"
+        $ ["-cp", classPath, classPackage ++ '.' : className,
+           "-i", show $ fromMaybe (-1) $ maxInstances config]
+        ++ ["-o" | not $ noOverflow config]
+  createProcess callAlloy {
+    std_out = CreatePipe,
+    std_in  = CreatePipe,
+    std_err = CreatePipe
+  }
+
+{-|
 This function may be used to get all raw model instances for a given Alloy
 specification. It calls Alloy via a Java interface and splits the raw instance
 answers before returning the resulting list of raw instances.
@@ -115,60 +137,43 @@ getRawInstancesWith
   -> String
   -- ^ The Alloy specification which should be loaded.
   -> IO [ByteString]
-getRawInstancesWith config content = do
-  classPath <- getClassPath
-  let callAlloy = proc "java"
-        $ ["-cp", classPath, classPackage ++ '.' : className,
-           "-i", show $ fromMaybe (-1) $ maxInstances config]
-        ++ ["-o" | not $ noOverflow config]
-  (Just hin, Just hout, Just herr, ph) <-
-    createProcess callAlloy {
-        std_out = CreatePipe,
-        std_in  = CreatePipe,
-        std_err = CreatePipe
-      }
-  pout <- listenForOutput hout
-  perr <- listenForOutput herr
+getRawInstancesWith config content
+  = bracket (callAlloyWith config) cleanupProcess $ \p -> do
+  (Just hin, Just hout, Just herr, ph) <- return p
 #ifndef mingw32_HOST_OS
   hSetBuffering hin NoBuffering
 #endif
-  hPutStr hin content
-  hFlush hin
-  hClose hin
-  maybe (return ()) (void . startTimeout hin hout herr ph) $ timeout config
-  out <- getOutput pout
-  err <- getOutput perr
-  printContentOnError ph
-  let err' = removeInfoLines err
-  unless (null err') $ fail $ unpack $ BS.unlines err'
-  return $ fmap (BS.intercalate "\n")
-    $ filterLast ((/= partialInstance) . last)
-    $ drop 1 $ splitOn [begin] out
+  let evaluateAlloy = do
+        hPutStr hin content
+        hFlush hin
+        hClose hin
+        printContentOnError ph
+  withTimeout hin hout herr ph (timeout config) $ do
+    (out, err) <- fst <$> concurrently
+      (concurrently (getOutput hout) (getOutput herr))
+      evaluateAlloy
+    let err' = removeInfoLines err
+    unless (null err') $ fail $ unpack $ BS.unlines err'
+    return $ fmap (BS.intercalate "\n")
+      $ filterLast ((/= partialInstance) . last)
+      $ drop 1 $ splitOn [begin] out
   where
     begin :: ByteString
     begin = "---INSTANCE---"
     filterLast _ []     = []
     filterLast p x@[_]  = filter p x
     filterLast p (x:xs) = x:filterLast p xs
-    getWholeOutput h = do
+    getOutput h = do
       eof <- hIsEOF h
       if eof
         then return []
       else catch
-        ((:) <$> BS.hGetLine h <*> getWholeOutput h)
+        ((:) <$> BS.hGetLine h <*> getOutput h)
         (\(_ :: IOException) -> return [partialInstance])
     printContentOnError ph = do
       code <- waitForProcess ph
       when (code == ExitFailure 1)
         $ putStrLn $ "Failed parsing the Alloy code:\n" <> content
-    listenForOutput h = do
-      mvar <- newEmptyMVar
-      pid <- forkIO $ getWholeOutput h >>= putMVar mvar
-      return (pid, mvar)
-    getOutput (pid, mvar) = do
-      output <- takeMVar mvar
-      killThread pid
-      return output
 
 partialInstance :: ByteString
 partialInstance = "---PARTIAL_INSTANCE---"
@@ -209,25 +214,40 @@ removeInfoLines (x:xs)
 removeInfoLines xs = xs
 
 {-|
-Start a new process that aborts execution by closing all handles and
-killing the processes after the given amount of time.
+Start a new sub process that communicates with the worker process
+if a timeout is provided.
+Execution is aborted by closing all handles and
+killing the underlying worker processes after the given amount of time
+(if it has not finished by then).
+The process will wait for the sub process to make the result available.
+
+If the provided timeout is 'Nothing', evaluation happens without
+scheduled interruption in the main thread.
 -}
-startTimeout
+withTimeout
   :: Handle
-  -- ^ the input handle to close
+  -- ^ the input handle (of the worker) to close
   -> Handle
-  -- ^ the output handle to close
+  -- ^ the output handle (of the worker) to close
   -> Handle
-  -- ^ the error handle to close
+  -- ^ the error handle (of the worker) to close
   -> ProcessHandle
-  -- ^ the main process handle
-  -> Int -> IO ThreadId
-startTimeout i o e ph t = forkIO $ do
+  -- ^ the worker process handle
+  -> Maybe Int
+  -- ^ the timeout (Nothing if no timeout)
+  -> IO a
+  -- ^ some action interacting with the worker and its handles
+  -> IO a
+withTimeout _ _ _ _  Nothing  p = p
+withTimeout i o e ph (Just t) p = withAsync p $ \a -> do
   threadDelay t
-  void $ forkIO $ hClose e
-  void $ forkIO $ hClose o
-  terminateProcess ph
+  mapConcurrently_ id [
+    hClose e,
+    hClose o,
+    terminateProcess ph
+    ]
   hClose i
+  wait a
 
 {-|
 Get the class path of all files in the data directory.

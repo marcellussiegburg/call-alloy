@@ -32,6 +32,7 @@ category:            Language
 description:         Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 
 dependencies:
+- async                       >= 2.2.1 && < 2.3
 - base                        >= 4.12 && < 5
 - bytestring                  >= 0.10.4 && < 0.12
 - containers                  >= 0.6 && < 0.7
