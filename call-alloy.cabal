@@ -1,11 +1,11 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.34.4.
+-- This file has been generated from package.yaml by hpack version 0.35.0.
 --
 -- see: https://github.com/sol/hpack
 
 name:           call-alloy
-version:        0.3.0.3
+version:        0.4
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
@@ -62,6 +62,7 @@ library
     , process ==1.6.*
     , split ==0.2.*
     , trifecta >=2 && <2.2
+  default-language: Haskell2010
   if os(windows)
     cpp-options: -DWINDOWS
     build-depends:
@@ -69,7 +70,6 @@ library
   else
     build-depends:
         unix ==2.7.*
-  default-language: Haskell2010
 
 test-suite call-alloy-test
   type: exitcode-stdio-1.0
@@ -103,6 +103,7 @@ test-suite call-alloy-test
     , process ==1.6.*
     , split ==0.2.*
     , trifecta >=2 && <2.2
+  default-language: Haskell2010
   if os(windows)
     cpp-options: -DWINDOWS
     build-depends:
@@ -110,4 +111,3 @@ test-suite call-alloy-test
   else
     build-depends:
         unix ==2.7.*
-  default-language: Haskell2010
