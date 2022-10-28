@@ -2,10 +2,12 @@
 
 ## Unreleased changes
 
+## Released changes
+
+### 0.4.0.1
+
 - fix too early abortion of process execution
 - show raw output on library parsing issues
-
-## Released changes
 
 ### 0.4
 
