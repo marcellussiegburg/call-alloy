@@ -3,6 +3,7 @@
 ## Unreleased changes
 
 - fix too early abortion of process execution
+- show raw output on library parsing issues
 
 ## Released changes
 

@@ -27,6 +27,8 @@ import Language.Alloy.Parser            (parseInstance)
 import Language.Alloy.Types             as Types
   (AlloyInstance, AlloySig, Entries, Object, Signature)
 
+import Control.Monad.Trans.Except       (runExceptT)
+
 {-|
 This function may be used to get all model instances for a given Alloy
 specification. It calls Alloy via a Java interface and parses the raw instance
@@ -55,8 +57,8 @@ getInstancesWith
   -- ^ The Alloy specification which should be loaded.
   -> IO [AlloyInstance]
 getInstancesWith config content =
-  map (either (error . show) id . parseInstance)
-  <$> getRawInstancesWith config content
+  getRawInstancesWith config content
+  >>= mapM (fmap (either (error . show) id) . runExceptT . parseInstance)
 
 {-|
 Check if there exists a model for the given specification. This function calls

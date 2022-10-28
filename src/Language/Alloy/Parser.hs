@@ -1,4 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE TupleSections #-}
 {-|
 Module      : Language.Alloy.Parser
@@ -16,12 +17,14 @@ module Language.Alloy.Parser (
   parseInstance,
   ) where
 
+import qualified Data.ByteString.Char8            as BS (putStrLn)
 import qualified Data.Set                         as S (fromList)
 import qualified Data.Map                         as M
   (alter, empty, insert, singleton)
 
 import Control.Applicative              ((<|>))
 import Control.Monad                    (void)
+import Control.Monad.IO.Class           (MonadIO (liftIO))
 import Control.Monad.Except             (MonadError, throwError)
 import Data.ByteString                  (ByteString)
 import Data.Functor                     (($>))
@@ -45,9 +48,15 @@ import Language.Alloy.Types (
 Parse an Alloy instance from a given String.
 May fail with 'ErrInfo'.
 -}
-parseInstance :: (MonadError ErrInfo m) => ByteString -> m AlloyInstance
+parseInstance
+  :: (MonadIO m, MonadError ErrInfo m)
+  => ByteString
+  -> m AlloyInstance
 parseInstance inst = case parseByteString alloyInstance mempty inst of
-  Failure l -> throwError l
+  Failure l -> do
+    liftIO $ BS.putStrLn "Failed parsing Alloys response as AlloyInstance:"
+    liftIO $ BS.putStrLn inst
+    throwError l
   Success r -> return $ combineEntries r
 
 combineEntries :: [Entries (,)] -> AlloyInstance
