@@ -147,11 +147,11 @@ getRawInstancesWith config content
         hPutStr hin content
         hFlush hin
         hClose hin
-        printContentOnError ph
   withTimeout hin hout herr ph (timeout config) $ do
     (out, err) <- fst <$> concurrently
       (concurrently (getOutput hout) (getOutput herr))
       evaluateAlloy
+    printContentOnError ph
     let err' = removeInfoLines err
     unless (null err') $ fail $ unpack $ BS.unlines err'
     return $ fmap (BS.intercalate "\n")

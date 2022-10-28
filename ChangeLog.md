@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- fix too early abortion of process execution
+
 ## Released changes
 
 ### 0.4

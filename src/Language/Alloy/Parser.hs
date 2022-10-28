@@ -51,9 +51,9 @@ parseInstance inst = case parseByteString alloyInstance mempty inst of
   Success r -> return $ combineEntries r
 
 combineEntries :: [Entries (,)] -> AlloyInstance
-combineEntries = foldl createOrInsert M.empty
+combineEntries = foldr createOrInsert M.empty
   where
-    createOrInsert ys (s, e) = M.alter (Just . alterSig e) s ys
+    createOrInsert (s, e) ys = M.alter (Just . alterSig e) s ys
     alterSig e Nothing  = e { relation = uncurry M.singleton $ relation e}
     alterSig e (Just y) = y { relation = uncurry M.insert (relation e) (relation y) }
 
