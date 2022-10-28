@@ -30,26 +30,38 @@ jobs:
       with:
         apt-get: ${{ matrix.apt-get }}
         brew: ${{ matrix.brew }}
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
-    - name: Cache Stack on unix
-      id: cache-stack-unix
-      uses: actions/cache@v1
+    - uses: actions/cache@v3
+      name: Cache ~/.stack
       with:
         path: ~/.stack
-        key: ${{ matrix.os }}-${{ matrix.plan.build }}-stack-home-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+        key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-global-
       if: contains(matrix.os, 'windows') == false
 
-    - name: Cache Stack on windows
-      id: cache-stack-windows
-      uses: actions/cache@v1
+    - uses: actions/cache@v3
+      name: Cache %APPDATA%\stack %LOCALAPPDATA%\Programs\stack
       with:
-        path: ~/AppData/Local/Programs/stack
-        key: ${{ matrix.os }}-${{ matrix.plan.build }}-stack-home-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+        path: |
+            ~\AppData\Roaming\stack
+            ~\AppData\Local\Programs\stack
+        key: ${{ matrix.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-global-
       if: contains(matrix.os, 'windows')
 
+    - uses: actions/cache@v3
+      name: Cache .stack-work
+      with:
+        path: .stack-work
+        key: ${{ matrix.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}-${{ hashFiles('**/*.hs') }}
+        restore-keys: |
+          ${{ runner.os }}-stack-work-
+
     - name: Setup stack
-      uses: haskell/actions/setup@v1
+      uses: haskell/actions/setup@v2
       with:
         enable-stack: true
         stack-no-global: true
