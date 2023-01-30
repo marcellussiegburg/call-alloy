@@ -33,6 +33,7 @@ import Control.Concurrent.Async (
   wait,
   withAsync
   )
+import Control.Concurrent.Extra         (Lock, newLock, withLock)
 import Control.Exception                (IOException, bracket, catch)
 import Control.Monad                    (unless, when)
 import Data.ByteString                  (ByteString)
@@ -43,8 +44,18 @@ import Data.Maybe                       (fromMaybe)
 import System.Exit                      (ExitCode (..))
 import System.FilePath
   (searchPathSeparator)
-import System.IO
-  (BufferMode (..), Handle, hClose, hFlush, hIsEOF, hPutStr, hSetBuffering)
+import System.IO (
+  BufferMode (..),
+  Handle,
+  hClose,
+  hFlush,
+  hIsEOF,
+  hPutStr,
+  hPutStrLn,
+  hSetBuffering,
+  stderr,
+  )
+import System.IO.Unsafe                 (unsafePerformIO)
 import System.Process (
   CreateProcess (..), StdStream (..), ProcessHandle,
   cleanupProcess,
@@ -91,6 +102,16 @@ defaultCallAlloyConfig = CallAlloyConfig {
   noOverflow   = True,
   timeout      = Nothing
   }
+
+{-# NOINLINE outLock #-}
+outLock :: Lock
+outLock = unsafePerformIO newLock
+
+putOutLn :: String -> IO ()
+putOutLn = withLock outLock . putStrLn
+
+putErrLn :: String -> IO ()
+putErrLn = withLock outLock . hPutStrLn stderr
 
 {-|
 This function may be used to get all raw model instances for a given Alloy
@@ -143,10 +164,15 @@ getRawInstancesWith config content
 #ifndef mingw32_HOST_OS
   hSetBuffering hin NoBuffering
 #endif
-  let evaluateAlloy = do
+  let evaluateAlloy' = do
         hPutStr hin content
         hFlush hin
         hClose hin
+      evaluateAlloy = catch evaluateAlloy' $ \e -> do
+        let err = show (e :: IOException)
+            warn = "Maybe not complete instance was sent to Alloy "
+            explain = "(Are timeouts set? Make sure they are not too small!): "
+        putErrLn ("Warning: " ++ warn ++ explain ++ err)
   withTimeout hin hout herr ph (timeout config) $ do
     (out, err) <- fst <$> concurrently
       (concurrently (getOutput hout) (getOutput herr))
@@ -163,17 +189,18 @@ getRawInstancesWith config content
     filterLast _ []     = []
     filterLast p x@[_]  = filter p x
     filterLast p (x:xs) = x:filterLast p xs
-    getOutput h = do
+    getOutput' h = do
       eof <- hIsEOF h
       if eof
         then return []
-      else catch
-        ((:) <$> BS.hGetLine h <*> getOutput h)
-        (\(_ :: IOException) -> return [partialInstance])
+        else (:) <$> BS.hGetLine h <*> getOutput h
+    getOutput h = catch
+      (getOutput' h)
+      (\(_ :: IOException) -> return [partialInstance])
     printContentOnError ph = do
       code <- waitForProcess ph
       when (code == ExitFailure 1)
-        $ putStrLn $ "Failed parsing the Alloy code:\n" <> content
+        $ putOutLn $ "Failed parsing the Alloy code:\n" <> content
 
 partialInstance :: ByteString
 partialInstance = "---PARTIAL_INSTANCE---"
