@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           call-alloy
-version:        0.4.0.1
+version:        0.4.0.2
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
@@ -70,7 +70,7 @@ library
         Win32 >=2.5 && <2.14
   else
     build-depends:
-        unix ==2.7.*
+        unix >=2.7 && <2.9
 
 test-suite call-alloy-test
   type: exitcode-stdio-1.0
@@ -113,4 +113,4 @@ test-suite call-alloy-test
         Win32 >=2.5 && <2.14
   else
     build-depends:
-        unix ==2.7.*
+        unix >=2.7 && <2.9

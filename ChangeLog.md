@@ -2,9 +2,11 @@
 
 ## Unreleased changes
 
-- make resilient to IO errors due to parallelism or abort
-
 ## Released changes
+
+### 0.4.0.2
+
+- make resilient to IO errors due to parallelism or abort
 
 ### 0.4.0.1
 
