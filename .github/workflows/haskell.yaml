@@ -16,7 +16,8 @@ jobs:
         plan:
           - { resolver: "--resolver=lts-16.31" }
           - { resolver: "--resolver=lts-18.28" }
-          - { resolver: "--resolver=lts-19.13" }
+          - { resolver: "--resolver=lts-19.33" }
+          - { resolver: "--resolver=lts-20.09" }
           - { resolver: "--resolver=nightly" }
         include:
           - os: ubuntu-latest
