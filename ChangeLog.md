@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- properly raise parsing error
+
 ## Released changes
 
 ### 0.4.0.2

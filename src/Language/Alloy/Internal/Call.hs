@@ -107,9 +107,6 @@ defaultCallAlloyConfig = CallAlloyConfig {
 outLock :: Lock
 outLock = unsafePerformIO newLock
 
-putOutLn :: String -> IO ()
-putOutLn = withLock outLock . putStrLn
-
 putErrLn :: String -> IO ()
 putErrLn = withLock outLock . hPutStrLn stderr
 
@@ -200,7 +197,7 @@ getRawInstancesWith config content
     printContentOnError ph = do
       code <- waitForProcess ph
       when (code == ExitFailure 1)
-        $ putOutLn $ "Failed parsing the Alloy code:\n" <> content
+        . ioError . userError $ "Failed parsing the Alloy code:\n" <> content
 
 partialInstance :: ByteString
 partialInstance = "---PARTIAL_INSTANCE---"
