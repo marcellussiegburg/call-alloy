@@ -36,8 +36,17 @@ import Control.Concurrent.Async (
 import Control.Concurrent.Extra         (Lock, newLock, withLock)
 import Control.Exception                (IOException, bracket, catch)
 import Control.Monad                    (unless, when)
+import Control.Monad.Extra              (whenJust)
 import Data.ByteString                  (ByteString)
 import Data.ByteString.Char8            (unpack)
+#ifdef mingw32_HOST_OS
+import Data.IORef (
+  IORef,
+  atomicWriteIORef,
+  newIORef,
+  readIORef,
+  )
+#endif
 import Data.List                        (intercalate)
 import Data.List.Split                  (splitOn)
 import Data.Maybe                       (fromMaybe)
@@ -45,14 +54,16 @@ import System.Exit                      (ExitCode (..))
 import System.FilePath
   (searchPathSeparator)
 import System.IO (
+#ifndef mingw32_HOST_OS
   BufferMode (..),
+  hSetBuffering,
+#endif
   Handle,
   hClose,
   hFlush,
   hIsEOF,
   hPutStr,
   hPutStrLn,
-  hSetBuffering,
   stderr,
   )
 import System.IO.Unsafe                 (unsafePerformIO)
@@ -163,6 +174,9 @@ getRawInstancesWith config content
   (Just hin, Just hout, Just herr, ph) <- return p
 #ifndef mingw32_HOST_OS
   hSetBuffering hin NoBuffering
+  let abort = Nothing
+#else
+  abort <- Just <$> newIORef False
 #endif
   let evaluateAlloy' = do
         hPutStr hin content
@@ -173,11 +187,11 @@ getRawInstancesWith config content
             warn = "Maybe not complete instance was sent to Alloy "
             explain = "(Are timeouts set? Make sure they are not too small!): "
         putErrLn ("Warning: " ++ warn ++ explain ++ err)
-  withTimeout hin hout herr ph (timeout config) $ do
+  withTimeout hin hout herr ph abort (timeout config) $ do
     (out, err) <- fst <$> concurrently
       (concurrently (getOutput hout) (getOutput herr))
       evaluateAlloy
-    printContentOnError ph
+    printContentOnError abort ph
     let err' = removeInfoLines err
     unless (null err') $ fail $ unpack $ BS.unlines err'
     return $ fmap (BS.intercalate "\n")
@@ -197,9 +211,10 @@ getRawInstancesWith config content
     getOutput h = catch
       (getOutput' h)
       (\(_ :: IOException) -> return [partialInstance])
-    printContentOnError ph = do
+    printContentOnError abort ph = do
       code <- waitForProcess ph
-      when (code == ExitFailure 1)
+      aborted <- maybe (return False) readIORef abort
+      when (code == ExitFailure 1 && not aborted)
         $ putOutLn $ "Failed parsing the Alloy code:\n" <> content
 
 partialInstance :: ByteString
@@ -260,14 +275,17 @@ withTimeout
   -- ^ the error handle (of the worker) to close
   -> ProcessHandle
   -- ^ the worker process handle
+  -> Maybe (IORef Bool)
+  -- ^ the IORef to communicate process abortion on Windows
   -> Maybe Int
   -- ^ the timeout (Nothing if no timeout)
   -> IO a
   -- ^ some action interacting with the worker and its handles
   -> IO a
-withTimeout _ _ _ _  Nothing  p = p
-withTimeout i o e ph (Just t) p = withAsync p $ \a -> do
+withTimeout _ _ _ _  _     Nothing  p = p
+withTimeout i o e ph abort (Just t) p = withAsync p $ \a -> do
   threadDelay t
+  whenJust abort (`atomicWriteIORef` True)
   mapConcurrently_ id [
     hClose e,
     hClose o,
