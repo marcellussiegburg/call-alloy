@@ -39,6 +39,8 @@ jobs:
         path: ~/.stack
         key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
         restore-keys: |
+          ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
+          ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
           ${{ runner.os }}-stack-global-
       if: contains(matrix.os, 'windows') == false
 
@@ -48,9 +50,9 @@ jobs:
         path: |
             ~\AppData\Roaming\stack
             ~\AppData\Local\Programs\stack
-        key: ${{ matrix.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+        key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
         restore-keys: |
-          ${{ matrix.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
+          ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
           ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
           ${{ runner.os }}-stack-global-
       if: contains(matrix.os, 'windows')
@@ -59,9 +61,9 @@ jobs:
       name: Cache .stack-work
       with:
         path: .stack-work
-        key: ${{ matrix.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}-${{ hashFiles('**/*.hs') }}
+        key: ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}-${{ hashFiles('**/*.hs') }}
         restore-keys: |
-          ${{ matrix.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
+          ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
           ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}
           ${{ runner.os }}-stack-work-
 
