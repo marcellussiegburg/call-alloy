@@ -2,9 +2,11 @@
 
 ## Unreleased changes
 
-- fix terminal spamming due to process abortion on Windows
-
 ## Released changes
+
+### 0.4.0.3
+
+- fix terminal spamming due to process abortion on Windows
 
 ### 0.4.0.2
 
