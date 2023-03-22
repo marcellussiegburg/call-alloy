@@ -39,14 +39,14 @@ import Control.Monad                    (unless, when)
 import Control.Monad.Extra              (whenJust)
 import Data.ByteString                  (ByteString)
 import Data.ByteString.Char8            (unpack)
-#ifdef mingw32_HOST_OS
 import Data.IORef (
   IORef,
   atomicWriteIORef,
+#ifdef mingw32_HOST_OS
   newIORef,
+#endif
   readIORef,
   )
-#endif
 import Data.List                        (intercalate)
 import Data.List.Split                  (splitOn)
 import Data.Maybe                       (fromMaybe)
