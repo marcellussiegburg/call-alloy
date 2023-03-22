@@ -27,7 +27,7 @@ jobs:
 
     steps:
     - name: Install ${{ matrix.os }} Packages
-      uses: mstksg/get-package@2a4b48d55d72d43ca89ae58ec9ca1397d34a1c35
+      uses: delgurth/get-package@v6.0.0
       with:
         apt-get: ${{ matrix.apt-get }}
         brew: ${{ matrix.brew }}
