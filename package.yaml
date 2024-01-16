@@ -50,7 +50,7 @@ when:
   then:
     cpp-options: -DWINDOWS
     dependencies:
-    - Win32                   >= 2.5 && < 2.14
+    - Win32                   >= 2.5 && < 2.15
   else:
     dependencies:
     - unix                    >= 2.7 && < 2.9
