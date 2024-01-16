@@ -20,11 +20,14 @@ module Language.Alloy.Internal.Call (
   ) where
 
 import qualified Data.ByteString                  as BS (
-  hGetLine,
   intercalate,
   stripPrefix,
   )
-import qualified Data.ByteString.Char8            as BS (putStrLn, unlines)
+import qualified Data.ByteString.Char8            as BS (
+  hGetLine,
+  putStrLn,
+  unlines,
+  )
 
 import Control.Concurrent (
   threadDelay,
