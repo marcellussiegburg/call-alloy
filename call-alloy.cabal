@@ -23,6 +23,7 @@ extra-source-files:
     ChangeLog.md
 data-files:
     alloy/RunAlloy.class
+    alloy/SATSolver.class
     org.alloytools.alloy.dist.jar
     commons-cli/commons-cli-1.5.0.jar
     commons-cli/NOTICE.txt

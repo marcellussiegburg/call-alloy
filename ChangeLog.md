@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- add support for different SAT solvers
+
 ## Released changes
 
 ### 0.4.0.3

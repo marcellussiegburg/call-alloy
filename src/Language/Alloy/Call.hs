@@ -12,7 +12,8 @@ A requirement for this library to work is a Java Runtime Environment
 (as it is required by Alloy).
 -}
 module Language.Alloy.Call (
-  CallAlloyConfig (maxInstances, noOverflow, timeout),
+  CallAlloyConfig (maxInstances, noOverflow, satSolver, timeout),
+  SatSolver (..),
   defaultCallAlloyConfig,
   existsInstance,
   getInstances,

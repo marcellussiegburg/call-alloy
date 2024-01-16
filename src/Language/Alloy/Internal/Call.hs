@@ -1,4 +1,5 @@
 {-# LANGUAGE CPP #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-|
@@ -11,7 +12,8 @@ results from calling Alloy.
 It provides data types and functions to interact with Alloy.
 -}
 module Language.Alloy.Internal.Call (
-  CallAlloyConfig (maxInstances, noOverflow, timeout),
+  CallAlloyConfig (maxInstances, noOverflow, satSolver, timeout),
+  SatSolver (..),
   defaultCallAlloyConfig,
   getRawInstances,
   getRawInstancesWith,
@@ -22,7 +24,7 @@ import qualified Data.ByteString                  as BS (
   intercalate,
   stripPrefix,
   )
-import qualified Data.ByteString.Char8            as BS (unlines)
+import qualified Data.ByteString.Char8            as BS (putStrLn, unlines)
 
 import Control.Concurrent (
   threadDelay,
@@ -74,7 +76,8 @@ import System.Process (
   )
 
 import Language.Alloy.RessourceNames (
-  className, classPackage,
+  className,
+  classPackage,
   )
 import Language.Alloy.Ressources (
   alloyJar,
@@ -82,6 +85,60 @@ import Language.Alloy.Ressources (
   slf4jJar,
   )
 import Paths_call_alloy                 (getDataDir)
+
+{-|
+Available SAT solvers.
+-}
+data SatSolver
+  = BerkMin
+  -- ^ BerkMin
+  --
+  -- * not tested
+  | Glucose
+  -- ^ Glucose
+  --
+  -- * incremental
+  | Glucose41
+  -- ^ Glucose41
+  --
+  -- * incremental
+  | Lingeling
+  -- ^ Lingeling
+  --
+  -- * not incremental
+  | MiniSat
+  -- ^ MiniSat
+  --
+  -- * incremental
+  | MiniSatProver
+  -- ^ MiniSatProver
+  --
+  -- * incremental
+  | PLingeling
+  -- ^ PLingeling
+  --
+  -- * not incremental
+  | SAT4J
+  -- ^ SAT4J
+  --
+  -- * incremental
+  | Spear
+  -- ^ Spear
+  --
+  -- * not tested
+  deriving (Bounded, Enum, Eq, Read, Show)
+
+toParameter :: SatSolver -> String
+toParameter = \case
+  BerkMin -> "BERKMIN"
+  Glucose -> "GLUCOSE"
+  Glucose41 -> "GLUCOSE41"
+  Lingeling -> "LINGELING"
+  MiniSat -> "MINISAT"
+  MiniSatProver -> "MINISAT_PROVER"
+  PLingeling -> "PLINGELING"
+  SAT4J -> "SAT4J"
+  Spear -> "SPEAR"
 
 {-|
 Configuration for calling alloy. These are:
@@ -96,6 +153,9 @@ data CallAlloyConfig = CallAlloyConfig {
   maxInstances :: !(Maybe Integer),
   -- | whether to not overflow when calculating numbers within Alloy
   noOverflow   :: !Bool,
+  -- | the 'SatSolver' to choose. Note that some are not incremental,
+  --   i.e. will return only one solution, even if 'maxInstances' is set higher.
+  satSolver    :: !SatSolver,
   -- | the time in microseconds after which to forcibly kill Alloy
   --   ('Nothing' for never)
   timeout      :: !(Maybe Int)
@@ -111,6 +171,7 @@ defaultCallAlloyConfig :: CallAlloyConfig
 defaultCallAlloyConfig = CallAlloyConfig {
   maxInstances = Nothing,
   noOverflow   = True,
+  satSolver    = SAT4J,
   timeout      = Nothing
   }
 
@@ -151,6 +212,7 @@ callAlloyWith config = do
         $ ["-cp", classPath, classPackage ++ '.' : className,
            "-i", show $ fromMaybe (-1) $ maxInstances config]
         ++ ["-o" | not $ noOverflow config]
+        ++ ["-s", toParameter (satSolver config)]
   createProcess callAlloy {
     std_out = CreatePipe,
     std_in  = CreatePipe,
@@ -191,7 +253,7 @@ getRawInstancesWith config content
     (out, err) <- fst <$> concurrently
       (concurrently (getOutput hout) (getOutput herr))
       evaluateAlloy
-    printContentOnError abort ph
+    printContentOnError out abort ph
     let err' = removeInfoLines err
     unless (null err') $ fail $ unpack $ BS.unlines err'
     return $ fmap (BS.intercalate "\n")
@@ -211,11 +273,13 @@ getRawInstancesWith config content
     getOutput h = catch
       (getOutput' h)
       (\(_ :: IOException) -> return [partialInstance])
-    printContentOnError abort ph = do
+    printContentOnError out abort ph = do
       code <- waitForProcess ph
       aborted <- maybe (return False) readIORef abort
       when (code == ExitFailure 1 && not aborted)
-        $ putOutLn $ "Failed parsing the Alloy code:\n" <> content
+        $ putOutLn $ "Failed parsing the Alloy code?:\n" <> content
+      when (code == ExitFailure 2 && not aborted)
+        $ withLock outLock $ BS.putStrLn $ BS.unlines out
 
 partialInstance :: ByteString
 partialInstance = "---PARTIAL_INSTANCE---"

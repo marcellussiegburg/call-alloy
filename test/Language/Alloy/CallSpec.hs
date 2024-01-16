@@ -5,6 +5,8 @@
 module Language.Alloy.CallSpec (spec) where
 
 import Control.Concurrent.Async         (forConcurrently)
+import Data.Foldable                    (for_)
+import Data.List                        ((\\))
 import Data.Map                         (Map)
 import Data.Set                         (Set)
 import Data.String.Interpolate          (i)
@@ -12,6 +14,7 @@ import Test.Hspec
 
 import Language.Alloy.Call (
   CallAlloyConfig (..),
+  SatSolver (..),
   defaultCallAlloyConfig,
   existsInstance,
   getInstances,
@@ -39,6 +42,16 @@ spec = do
       getInstances (Just 1) "pred a (a: Int) { a > a }\nrun a" `shouldReturn` []
     it "giving not enough time should return no result" $
       getInstancesWith cfg "pred a (a: Int) { a >= a }\nrun a" `shouldReturn` []
+    for_ solvers $ \solver ->
+      it ("using solver " ++ show solver ++ " generates an instance") $ do
+        xs <- length <$> getInstancesWith
+          cfg {
+            maxInstances = Just 1,
+            satSolver = solver,
+            timeout = Nothing
+            }
+          (graph 2)
+        xs `shouldBe` 1
     it "called in parallel does not create issues" $ do
       ys <- forConcurrently [1 .. 6] $ \x ->
         length <$> getInstances (Just $ x ^ (3 :: Integer)) (graph x)
@@ -53,6 +66,8 @@ spec = do
       maxInstances = Nothing,
       timeout      = Just 0
       }
+    untested = [BerkMin, Spear]
+    solvers = [minBound ..] \\ untested
 
 graph :: Integer -> String
 graph x = [i|
