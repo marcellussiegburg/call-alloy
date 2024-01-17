@@ -82,7 +82,7 @@ jobs:
     - name: Install dependencies on unix
       run: |
         set -ex
-        stack --no-terminal --install-ghc $ARGS test --only-dependencies
+        stack --no-terminal --install-ghc $ARGS test --bench --only-dependencies
         set +ex
       env:
         ARGS: "--resolver=${{ matrix.plan.resolver }}"
@@ -91,7 +91,7 @@ jobs:
     - name: Install dependencies on windows
       shell: powershell
       run: |
-        stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --only-dependencies
+        stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --bench --only-dependencies
       env:
         ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows')
