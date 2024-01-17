@@ -14,19 +14,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         plan:
-          - { resolver: "--resolver=lts-16.31" }
-          - { resolver: "--resolver=lts-18.28" }
-          - { resolver: "--resolver=lts-19.33" }
-          - { resolver: "--resolver=lts-20.26" }
-          - { resolver: "--resolver=lts-21.25" }
-          - { resolver: "--resolver=lts-22.6" }
-          - { resolver: "--resolver=nightly" }
+          - { resolver: lts-16.31 }
+          - { resolver: lts-18.28 }
+          - { resolver: lts-19.33 }
+          - { resolver: lts-20.26 }
+          - { resolver: lts-21.25 }
+          - { resolver: lts-22.6 }
+          - { resolver: nightly }
         include:
           - os: ubuntu-latest
             apt-get: java-common
         exclude:
           - os: macOS-latest
-            resolver: "--resolver=lts-16.31"
+            resolver: lts-16.31
 
     runs-on: ${{ matrix.os }}
 
@@ -84,7 +84,7 @@ jobs:
         stack --no-terminal --install-ghc $ARGS test --only-dependencies
         set +ex
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows') == false
 
     - name: Install dependencies on windows
@@ -92,7 +92,7 @@ jobs:
       run: |
         stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --only-dependencies
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows')
 
     - name: Build on unix
@@ -101,7 +101,7 @@ jobs:
         stack --no-terminal --install-ghc $ARGS test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=PLingeling'
         set +ex
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows') == false
 
     - name: Build on windows
@@ -109,5 +109,5 @@ jobs:
       run: |
         stack --no-terminal --install-ghc ${env:ARGS} test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows')
