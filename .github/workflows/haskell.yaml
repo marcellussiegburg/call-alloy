@@ -26,7 +26,7 @@ jobs:
             apt-get: java-common
         exclude:
           - os: macOS-latest
-            resolver: lts-16.31
+            plan: { resolver: lts-16.31 }
 
     runs-on: ${{ matrix.os }}
 
