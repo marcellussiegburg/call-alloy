@@ -36,7 +36,8 @@ jobs:
       with:
         apt-get: ${{ matrix.apt-get }}
         brew: ${{ matrix.brew }}
-    - uses: actions/checkout@v3
+
+    - uses: actions/checkout@v4
 
     - uses: actions/cache@v3
       name: Cache ~/.stack
@@ -73,7 +74,7 @@ jobs:
           ${{ runner.os }}-stack-work-
 
     - name: Setup stack
-      uses: haskell/actions/setup@v2
+      uses: haskell-actions/setup@v2
       with:
         enable-stack: true
         stack-no-global: true
