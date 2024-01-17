@@ -169,6 +169,7 @@ Default configuration for calling Alloy. Defaults to:
 
  * retrieve all instances
  * do not overflow
+ * 'SAT4J'
 -}
 defaultCallAlloyConfig :: CallAlloyConfig
 defaultCallAlloyConfig = CallAlloyConfig {
