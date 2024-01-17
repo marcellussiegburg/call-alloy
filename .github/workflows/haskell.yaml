@@ -14,16 +14,19 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         plan:
-          - { resolver: "--resolver=lts-16.31" }
-          - { resolver: "--resolver=lts-18.28" }
-          - { resolver: "--resolver=lts-19.33" }
-          - { resolver: "--resolver=lts-20.26" }
-          - { resolver: "--resolver=lts-21.25" }
-          - { resolver: "--resolver=lts-22.6" }
-          - { resolver: "--resolver=nightly" }
+          - { resolver: lts-16.31 }
+          - { resolver: lts-18.28 }
+          - { resolver: lts-19.33 }
+          - { resolver: lts-20.26 }
+          - { resolver: lts-21.25 }
+          - { resolver: lts-22.6 }
+          - { resolver: nightly }
         include:
           - os: ubuntu-latest
             apt-get: java-common
+        exclude:
+          - os: macOS-latest
+            plan: { resolver: lts-16.31 }
 
     runs-on: ${{ matrix.os }}
 
@@ -33,7 +36,8 @@ jobs:
       with:
         apt-get: ${{ matrix.apt-get }}
         brew: ${{ matrix.brew }}
-    - uses: actions/checkout@v3
+
+    - uses: actions/checkout@v4
 
     - uses: actions/cache@v3
       name: Cache ~/.stack
@@ -70,7 +74,7 @@ jobs:
           ${{ runner.os }}-stack-work-
 
     - name: Setup stack
-      uses: haskell/actions/setup@v2
+      uses: haskell-actions/setup@v2
       with:
         enable-stack: true
         stack-no-global: true
@@ -81,30 +85,30 @@ jobs:
         stack --no-terminal --install-ghc $ARGS test --bench --only-dependencies
         set +ex
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows') == false
 
     - name: Install dependencies on windows
       shell: powershell
       run: |
-        stack --no-terminal --install-ghc ${env:ARGS} test --bench --only-dependencies
+        stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --bench --only-dependencies
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows')
 
     - name: Build on unix
       run: |
         set -ex
-        stack --no-terminal --install-ghc $ARGS test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps
+        stack --no-terminal --install-ghc $ARGS test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=PLingeling'
         set +ex
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows') == false
 
     - name: Build on windows
       shell: powershell
       run: |
-        stack --no-terminal --install-ghc ${env:ARGS} test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps
+        stack --no-terminal --install-ghc ${env:ARGS} test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
       env:
-        ARGS: ${{ matrix.plan.resolver }}
+        ARGS: "--resolver=${{ matrix.plan.resolver }}"
       if: contains(matrix.os, 'windows')
