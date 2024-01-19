@@ -26,6 +26,8 @@ jobs:
           - os: ubuntu-latest
             apt-get: java-common
         exclude:
+          - os: ubuntu-latest
+            plan: { resolver: lts-16.31 }
           - os: macOS-latest
             plan: { resolver: lts-16.31 }
 
@@ -100,16 +102,17 @@ jobs:
     - name: Build on unix
       run: |
         set -ex
-        stack --no-terminal --install-ghc $ARGS test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=PLingeling'
+        stack --no-terminal --install-ghc test $ARGS --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=PLingeling'
         set +ex
       env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:=${{ matrix.plan.flag }}"
+        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }}"
       if: contains(matrix.os, 'windows') == false
 
     - name: Build on windows
       shell: powershell
       run: |
-        stack --no-terminal --install-ghc ${env:ARGS} test --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
+        stack --no-terminal --install-ghc test ${env:RESOLVER} ${env:FLAG} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
       env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:=${{ matrix.plan.flag }}"
+        RESOLVER: "--resolver=${{ matrix.plan.resolver }}"
+        FLAG: "--flag=call-alloy:${{ matrix.plan.flag }}"
       if: contains(matrix.os, 'windows')
