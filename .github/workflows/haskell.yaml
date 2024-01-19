@@ -111,7 +111,8 @@ jobs:
     - name: Build on windows
       shell: powershell
       run: |
-        stack --no-terminal --install-ghc test ${env:ARGS} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
+        stack --no-terminal --install-ghc test ${env:RESOLVER} ${env:FLAG} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
       env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }}"
+        RESOLVER: "--resolver=${{ matrix.plan.resolver }}"
+        FLAG: "--flag=call-alloy:${{ matrix.plan.flag }}"
       if: contains(matrix.os, 'windows')
