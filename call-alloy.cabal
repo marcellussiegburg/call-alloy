@@ -36,6 +36,11 @@ source-repository head
   type: git
   location: https://github.com/marcellussiegburg/call-alloy
 
+flag test-different-solvers
+  description: During tests different solvers are called to test if they are working on the current system
+  manual: True
+  default: False
+
 library
   exposed-modules:
       Language.Alloy.Call
@@ -115,3 +120,5 @@ test-suite call-alloy-test
   else
     build-depends:
         unix >=2.7 && <2.9
+  if flag(test-different-solvers)
+    cpp-options: -DTEST_DIFFERENT_SOLVERS

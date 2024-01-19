@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- introduce flag for testing different SAT solvers
+
 ## Released changes
 
 ### 0.4.1

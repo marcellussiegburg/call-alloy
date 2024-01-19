@@ -1,3 +1,4 @@
+{-# LANGUAGE CPP #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE StandaloneDeriving #-}
@@ -5,8 +6,10 @@
 module Language.Alloy.CallSpec (spec) where
 
 import Control.Concurrent.Async         (forConcurrently)
+#if TEST_DIFFERENT_SOLVERS
 import Data.Foldable                    (for_)
 import Data.List                        ((\\))
+#endif
 import Data.Map                         (Map)
 import Data.Set                         (Set)
 import Data.String.Interpolate          (i)
@@ -14,7 +17,9 @@ import Test.Hspec
 
 import Language.Alloy.Call (
   CallAlloyConfig (..),
+#if TEST_DIFFERENT_SOLVERS
   SatSolver (..),
+#endif
   defaultCallAlloyConfig,
   existsInstance,
   getInstances,
@@ -42,6 +47,9 @@ spec = do
       getInstances (Just 1) "pred a (a: Int) { a > a }\nrun a" `shouldReturn` []
     it "giving not enough time should return no result" $
       getInstancesWith cfg "pred a (a: Int) { a >= a }\nrun a" `shouldReturn` []
+#if TEST_DIFFERENT_SOLVERS
+    let untested = [BerkMin, Spear]
+        solvers = [minBound ..] \\ untested
     for_ solvers $ \solver ->
       it ("using solver " ++ show solver ++ " generates an instance") $ do
         xs <- length <$> getInstancesWith
@@ -52,6 +60,7 @@ spec = do
             }
           (graph 2)
         xs `shouldBe` 1
+#endif
     it "called in parallel does not create issues" $ do
       ys <- forConcurrently [1 .. 6] $ \x ->
         length <$> getInstances (Just $ x ^ (3 :: Integer)) (graph x)
@@ -66,8 +75,6 @@ spec = do
       maxInstances = Nothing,
       timeout      = Just 0
       }
-    untested = [BerkMin, Spear]
-    solvers = [minBound ..] \\ untested
 
 graph :: Integer -> String
 graph x = [i|

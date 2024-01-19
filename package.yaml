@@ -55,6 +55,12 @@ when:
     dependencies:
     - unix                    >= 2.7 && < 2.9
 
+flags:
+  test-different-solvers:
+    description: During tests different solvers are called to test if they are working on the current system
+    manual: true
+    default: false
+
 library:
   source-dirs: src
   exposed-modules:
@@ -75,3 +81,6 @@ tests:
     - call-alloy
     - hspec
     - string-interpolate
+    when:
+      condition: flag(test-different-solvers)
+      cpp-options: -DTEST_DIFFERENT_SOLVERS
