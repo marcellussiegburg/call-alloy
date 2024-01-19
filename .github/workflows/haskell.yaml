@@ -26,6 +26,8 @@ jobs:
           - os: ubuntu-latest
             apt-get: java-common
         exclude:
+          - os: ubuntu-latest
+            plan: { resolver: lts-16.31 }
           - os: macOS-latest
             plan: { resolver: lts-16.31 }
 
