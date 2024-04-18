@@ -28,7 +28,8 @@ import Language.Alloy.Parser            (parseInstance)
 import Language.Alloy.Types             as Types
   (AlloyInstance, AlloySig, Entries, Object, Signature)
 
-import Control.Monad.Trans.Except       (runExceptT)
+import Control.Monad.Catch              (MonadThrow)
+import Control.Monad.IO.Class           (MonadIO (liftIO))
 
 {-|
 This function may be used to get all model instances for a given Alloy
@@ -36,11 +37,12 @@ specification. It calls Alloy via a Java interface and parses the raw instance
 answers before returning the resulting list of 'AlloyInstance's.
 -}
 getInstances
-  :: Maybe Integer
+  :: (MonadIO m, MonadThrow m)
+  => Maybe Integer
   -- ^ How many instances to return; 'Nothing' for all.
   -> String
   -- ^ The Alloy specification which should be loaded.
-  -> IO [AlloyInstance]
+  -> m [AlloyInstance]
 getInstances maxIs = getInstancesWith defaultCallAlloyConfig {
   maxInstances = maxIs
   }
@@ -52,14 +54,15 @@ answers before returning the resulting list of 'AlloyInstance's.
 Parameters are set using a 'CallAlloyConfig'.
 -}
 getInstancesWith
-  :: CallAlloyConfig
+  :: (MonadIO m, MonadThrow m)
+  => CallAlloyConfig
   -- ^ The configuration to be used.
   -> String
   -- ^ The Alloy specification which should be loaded.
-  -> IO [AlloyInstance]
+  -> m [AlloyInstance]
 getInstancesWith config content =
-  getRawInstancesWith config content
-  >>= mapM (fmap (either (error . show) id) . runExceptT . parseInstance)
+  liftIO (getRawInstancesWith config content)
+  >>= mapM parseInstance
 
 {-|
 Check if there exists a model for the given specification. This function calls
@@ -67,8 +70,9 @@ Alloy retrieving one instance. If there is no such instance, it returns 'False'.
 This function calls 'getInstances'.
 -}
 existsInstance
-  :: String
+  :: (MonadIO m, MonadThrow m)
+  => String
   -- ^ The Alloy specification which should be loaded.
-  -> IO Bool
+  -> m Bool
   -- ^ Whether there exists an instance (within the relevant scope).
 existsInstance = fmap (not . null) . getInstances (Just 1)

@@ -24,8 +24,8 @@ import qualified Data.Map                         as M
 
 import Control.Applicative              ((<|>))
 import Control.Monad                    (void)
+import Control.Monad.Catch              (MonadThrow (throwM))
 import Control.Monad.IO.Class           (MonadIO (liftIO))
-import Control.Monad.Except             (MonadError, throwError)
 import Data.ByteString                  (ByteString)
 import Data.Functor                     (($>))
 import Data.List                        (intercalate)
@@ -34,6 +34,7 @@ import Data.Maybe                       (fromJust)
 import Data.Set                         (Set)
 import Text.Trifecta
 
+import Language.Alloy.Exceptions        (AlloyResponseFailure (..))
 import Language.Alloy.Types (
   AlloyInstance,
   Annotation (..),
@@ -46,17 +47,17 @@ import Language.Alloy.Types (
 
 {-|
 Parse an Alloy instance from a given String.
-May fail with 'ErrInfo'.
+May fail with 'ParsingAlloyResponseFailed'.
 -}
 parseInstance
-  :: (MonadIO m, MonadError ErrInfo m)
+  :: (MonadIO m, MonadThrow m)
   => ByteString
   -> m AlloyInstance
 parseInstance inst = case parseByteString alloyInstance mempty inst of
   Failure l -> do
     liftIO $ BS.putStrLn "Failed parsing Alloys response as AlloyInstance:"
     liftIO $ BS.putStrLn inst
-    throwError l
+    throwM $ ParsingAlloyResponseFailed l
   Success r -> return $ combineEntries r
 
 combineEntries :: [Entries (,)] -> AlloyInstance
@@ -84,11 +85,9 @@ entry :: Parser (Entries (,))
 entry = do
   entryAnnotation <- try (string "skolem " $> Just Skolem) <|> pure Nothing
   entrySignature <- sig
-  (entrySignature,)
-    <$> (Entry entryAnnotation
-         <$> ((,)
+  (entrySignature,) . Entry entryAnnotation <$> ((,)
               <$> ((string "<:" *> word) <|> pure "")
-              <*> parseRelations <* (void endOfLine <|> eof)))
+              <*> parseRelations <* (void endOfLine <|> eof))
 
 sig :: Parser Signature
 sig = do

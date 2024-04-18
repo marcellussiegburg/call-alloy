@@ -19,12 +19,19 @@ module Language.Alloy.Functions (
 import qualified Data.Set                         as S (fromList, toList)
 import qualified Data.Map                         as M (lookup, keys)
 
-import Control.Monad.Except             (MonadError, throwError)
-import Data.List                        (intercalate)
+import Control.Monad.Catch              (MonadThrow, throwM)
 import Data.Map                         (Map)
 import Data.Set                         (Set)
-import Data.String                      (IsString, fromString)
 
+import Language.Alloy.Exceptions (
+  AlloyLookupFailed (..),
+  AlloyObjectNameMismatch (..),
+  Alternatives (Alternatives),
+  Expected (Expected),
+  Got (Got),
+  RelationName (RelationName),
+  UnexpectedAlloyRelation (..),
+  )
 import Language.Alloy.Types (
   AlloyInstance,
   AlloySig,
@@ -32,7 +39,6 @@ import Language.Alloy.Types (
   Object (..),
   Relation (..),
   Signature (..),
-  showSignature,
   )
 
 {-|
@@ -67,7 +73,7 @@ e.g. returning all (within Alloy) available Int values could look like this
 >    getSingleAs "" int n
 -}
 int
-  :: (IsString s, MonadError s m, Semigroup s)
+  :: MonadThrow m
   => String
   -> Int
   -> m Int
@@ -81,7 +87,7 @@ I.e. setting and checking the 'String' for the base name of the value to look fo
 but failing in case anything different appears (unexpectedly).
 -}
 object
-  :: (IsString s, MonadError s m, Semigroup s)
+  :: MonadThrow m
   => String
   -> (Int -> a)
   -> String
@@ -89,9 +95,7 @@ object
   -> m a
 object s f s' g =
   if s /= s
-  then throwError $ "expected an object of name " <> fromString s
-    <> " but got an object of name "
-    <> fromString s' <> "."
+  then throwM $ AlloyObjectNameMismatch (Expected s) (Got s')
   else return $ f g
 
 specifyObject
@@ -113,7 +117,7 @@ The mapping has to be injective (for all expected cases).
 Successful if the signature's relation is a single value.
 -}
 getIdentityAs
-  :: (MonadError s m, IsString s)
+  :: MonadThrow m
   => String
   -> (String -> Int -> m b)
   -> Entry Map a
@@ -130,7 +134,7 @@ The mapping has to be injective (for all expected cases).
 Successful if the signature's relation is a set (or empty).
 -}
 getSingleAs
-  :: (IsString s, MonadError s m, Ord a)
+  :: (MonadThrow m, Ord a)
   => String
   -> (String -> Int -> m a)
   -> AlloySig
@@ -147,7 +151,7 @@ The mapping has to be injective (for all expected cases).
 Successful if the signature's relation is binary (or empty).
 -}
 getDoubleAs
-  :: (IsString s, MonadError s m, Ord a, Ord b)
+  :: (MonadThrow m, Ord a, Ord b)
   => String
   -> (String -> Int -> m a)
   -> (String -> Int -> m b)
@@ -169,7 +173,7 @@ The mapping has to be injective (for all expected cases).
 Successful if the signature's relation is ternary (or empty).
 -}
 getTripleAs
-  :: (IsString s, MonadError s m, Ord a, Ord b, Ord c)
+  :: (MonadThrow m, Ord a, Ord b, Ord c)
   => String
   -> (String -> Int -> m a)
   -> (String -> Int -> m b)
@@ -186,58 +190,56 @@ getTripleAs s f g h inst = do
       <*> specifyObject h z
 
 lookupRel
-  :: (IsString s, MonadError s m)
+  :: MonadThrow m
   => (Relation a -> m b)
   -> String
   -> Entry Map a
   -> m b
 lookupRel kind rel e = case M.lookup rel (relation e) of
-  Nothing -> throwError $ fromString $ "relation " ++ fromString rel
-    ++ " is missing in the Alloy instance"
-    ++ "; available are: " ++ intercalate ", " (M.keys $ relation e)
+  Nothing -> throwM $ LookupAlloyRelationFailed
+    (RelationName rel)
+    (Alternatives $ map RelationName $ M.keys $ relation e)
   Just r  -> kind r
 
 {-|
 Lookup a signature within a given Alloy instance.
 -}
 lookupSig
-  :: (IsString s, MonadError s m)
+  :: MonadThrow m
   => Signature
   -> AlloyInstance
   -> m AlloySig
 lookupSig s insta = case M.lookup s insta of
-  Nothing -> throwError $ fromString $ showSignature s
-    ++ " is missing in the Alloy instance"
-    ++ "; available are: \"" ++ intercalate "\", " (showSignature <$> M.keys insta)
+  Nothing -> throwM $ LookupAlloySignatureFailed s insta
   Just e   -> return e
 
 identity
-  :: (IsString s, MonadError s m)
+  :: (MonadThrow m)
   => Relation a
   -> m Object
 identity (Id r) = return r
-identity _      = throwError "Relation is (unexpectedly) not exactly a single element"
+identity _      = throwM ExpectedIdenticalRelationship
 
 single
-  :: (IsString s, MonadError s m, Monoid (a Object))
+  :: (MonadThrow m, Monoid (a Object))
   => Relation a
   -> m (a Object)
 single EmptyRelation = return mempty
 single (Single r)    = return r
-single _             = throwError "Relation is (unexpectedly) a mapping"
+single _             = throwM ExpectedSingleRelationship
 
 double
-  :: (IsString s, MonadError s m, Monoid (a (Object, Object)))
+  :: (MonadThrow m, Monoid (a (Object, Object)))
   => Relation a
   -> m (a (Object, Object))
 double EmptyRelation = return mempty
 double (Double r)    = return r
-double _             = throwError "Relation is not a binary mapping"
+double _             = throwM ExpectedDoubleRelationship
 
 triple
-  :: (IsString s, MonadError s m, Monoid (a (Object, Object, Object)))
+  :: (MonadThrow m, Monoid (a (Object, Object, Object)))
   => Relation a
   -> m (a (Object, Object, Object))
 triple EmptyRelation = return mempty
 triple (Triple r)    = return r
-triple _             = throwError "Relation is not a ternary mapping"
+triple _             = throwM ExpectedTripleRelationship

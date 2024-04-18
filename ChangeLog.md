@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- use MonadThrow instead of MonadError
+
 ## Released changes
 
 ### 0.4.1.1
