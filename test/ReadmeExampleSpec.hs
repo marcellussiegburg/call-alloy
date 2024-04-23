@@ -1,7 +1,6 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TemplateHaskell #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 module ReadmeExampleSpec (spec) where
 
@@ -32,9 +31,9 @@ deriving instance Show (Entry Map Set)
 deriving instance Show (Relation Set)
 
 spec :: Spec
-spec = do
+spec =
   describe "readme example" $ do
-    it "returns expected instance" $ do
+    it "returns expected instance" $
       getFirstInstance
         `shouldReturn`
         read $(embedStringFile "test/unit/readmeExampleInstance.hs")

@@ -2,10 +2,12 @@
 
 ## Unreleased changes
 
+## Released changes
+
+### 0.5
+
 - use MonadThrow instead of MonadError
 - add Readme eample to test cases
-
-## Released changes
 
 ### 0.4.1.1
 
