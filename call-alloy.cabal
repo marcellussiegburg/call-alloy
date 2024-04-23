@@ -5,7 +5,7 @@ cabal-version: 1.12
 -- see: https://github.com/sol/hpack
 
 name:           call-alloy
-version:        0.4.1.1
+version:        0.5
 synopsis:       A simple library to call Alloy given a specification
 description:    Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
 category:       Language
@@ -13,7 +13,7 @@ homepage:       https://github.com/marcellussiegburg/call-alloy#readme
 bug-reports:    https://github.com/marcellussiegburg/call-alloy/issues
 author:         Marcellus Siegburg
 maintainer:     marcellus.siegburg@uni-due.de
-copyright:      2019-2022 Marcellus Siegburg
+copyright:      2019-2024 Marcellus Siegburg
 license:        MIT
 license-file:   LICENSE
 build-type:     Simple
