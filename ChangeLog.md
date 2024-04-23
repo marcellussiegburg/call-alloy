@@ -3,6 +3,7 @@
 ## Unreleased changes
 
 - use MonadThrow instead of MonadError
+- add Readme eample to test cases
 
 ## Released changes
 

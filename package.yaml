@@ -80,6 +80,7 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - call-alloy
+    - file-embed
     - hspec
     - string-interpolate
     when:
