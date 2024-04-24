@@ -1,5 +1,5 @@
 name:                call-alloy
-version:             0.5
+version:             0.5.0.1
 github:              "marcellussiegburg/call-alloy"
 license:             MIT
 author:              "Marcellus Siegburg"
@@ -20,6 +20,9 @@ extra-source-files:
 - README.md
 - LICENSE
 - ChangeLog.md
+- test/unit/readmeExampleInstance.hs
+- test/unit/readmeExampleResult.hs
+- test/unit/readmeExampleSpecification.als
 ghc-options:
   - -Wall
   - -Wincomplete-uni-patterns
