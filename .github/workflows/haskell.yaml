@@ -26,7 +26,7 @@ jobs:
             apt-get: java-common
             test-arguments: '--skip=PLingeling'
           - os: macOS-latest
-            test-arguments: '--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=PLingeling'
+            test-arguments: '--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
           - os: windows-latest
             test-arguments: '--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
         exclude:
@@ -55,6 +55,7 @@ jobs:
           ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
           ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
           ${{ runner.os }}-stack-global-
+        save-always: true
       if: contains(matrix.os, 'windows') == false
 
     - uses: actions/cache@v4
@@ -68,6 +69,7 @@ jobs:
           ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
           ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
           ${{ runner.os }}-stack-global-
+        save-always: true
       if: contains(matrix.os, 'windows')
 
     - uses: actions/cache@v4
