@@ -106,10 +106,11 @@ jobs:
     - name: Build on unix
       run: |
         set -ex
-        stack --no-terminal --install-ghc test $ARGS --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps
+        stack --no-terminal --install-ghc test ${ARGS} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='${TEST_ARGUMENTS}'
         set +ex
       env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }} '--test-arguments=\"${{ matrix.test-arguments }}\"'"
+        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }}"
+        TEST_ARGUMENTS: '${{ matrix.test-arguments }}'
       if: contains(matrix.os, 'windows') == false
 
     - name: Build on windows
