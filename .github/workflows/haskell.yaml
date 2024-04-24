@@ -106,7 +106,7 @@ jobs:
     - name: Build on unix
       run: |
         set -ex
-        stack --no-terminal --install-ghc test ${ARGS} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments='${TEST_ARGUMENTS}'
+        stack --no-terminal --install-ghc test ${ARGS} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments="${TEST_ARGUMENTS}"
         set +ex
       env:
         ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }}"
