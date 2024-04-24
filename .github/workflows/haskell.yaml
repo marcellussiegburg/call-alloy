@@ -118,9 +118,9 @@ jobs:
     - name: Build on windows
       shell: powershell
       run: |
-        stack --no-terminal --install-ghc test ${env:RESOLVER} ${env:FLAG} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps ${TEST_ARGUMENTS}
+        stack --no-terminal --install-ghc test ${env:RESOLVER} ${env:FLAG} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps ${env:TEST_ARGUMENTS}
       env:
         RESOLVER: "--resolver=${{ matrix.plan.resolver }}"
         FLAG: "--flag=call-alloy:${{ matrix.plan.flag }}"
-        TEST_ARGUMENTS: "--test-arguments=\"${{ matrix.test-arguments }}\""
+        TEST_ARGUMENTS: "--test-arguments=${{ matrix.test-arguments }}"
       if: contains(matrix.os, 'windows')
