@@ -14,7 +14,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, macOS-latest, windows-latest]
         plan:
-          - { resolver: lts-16.31, flag: test-different-solvers }
           - { resolver: lts-18.28, flag: test-different-solvers }
           - { resolver: lts-19.33, flag: test-different-solvers }
           - { resolver: lts-20.26, flag: test-different-solvers }
@@ -26,10 +25,10 @@ jobs:
           - os: ubuntu-latest
             apt-get: java-common
         exclude:
-          - os: ubuntu-latest
-            plan: { resolver: lts-16.31 }
           - os: macOS-latest
-            plan: { resolver: lts-16.31 }
+            plan: {resolver: lts-18.28}
+          - os: macOS-latest
+            plan: {resolver: lts-19.33}
 
     runs-on: ${{ matrix.os }}
 
