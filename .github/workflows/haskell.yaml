@@ -26,7 +26,7 @@ jobs:
             apt-get: java-common
             test-arguments: '--skip=PLingeling'
           - os: macOS-latest
-            test-arguments: '--skip=Glucose\ --skip=Glucose41\ --skip=Lingeling\ --skip=PLingeling'
+            test-arguments: '--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=PLingeling'
           - os: windows-latest
             test-arguments: '--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
         exclude:
@@ -109,7 +109,7 @@ jobs:
         stack --no-terminal --install-ghc test $ARGS --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps
         set +ex
       env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }} --test-arguments=\"${{ matrix.test-arguments }}\""
+        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }} '--test-arguments=\"${{ matrix.test-arguments }}\"'"
       if: contains(matrix.os, 'windows') == false
 
     - name: Build on windows
