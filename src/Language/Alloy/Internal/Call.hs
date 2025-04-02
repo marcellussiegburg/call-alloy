@@ -91,12 +91,16 @@ import Paths_call_alloy                 (getDataDir)
 
 {-|
 Available SAT solvers.
+
+Note: solvers marked as not supported by default were supported
+in earlier versions of Alloy, but got removed.
+There might be a way of integrating those manually, but this has net been tried.
 -}
 data SatSolver
   = BerkMin
   -- ^ BerkMin
   --
-  -- * not tested
+  -- * not supported by default
   | Glucose
   -- ^ Glucose
   --
@@ -104,7 +108,7 @@ data SatSolver
   | Glucose41
   -- ^ Glucose41
   --
-  -- * incremental
+  -- * not supported by default
   | Lingeling
   -- ^ Lingeling
   --
@@ -120,28 +124,38 @@ data SatSolver
   | PLingeling
   -- ^ PLingeling
   --
-  -- * not incremental
+  -- * not supported by default
   | SAT4J
   -- ^ SAT4J
+  --
+  -- * incremental
+  | SAT4JLight
+  -- ^ SAT4J Light
+  --
+  -- * incremental
+  | SAT4JPMax
+  -- ^ SAT4Ji PMax
   --
   -- * incremental
   | Spear
   -- ^ Spear
   --
-  -- * not tested
+  -- * not supported by default
   deriving (Bounded, Enum, Eq, Read, Show)
 
 toParameter :: SatSolver -> String
 toParameter = \case
-  BerkMin -> "BERKMIN"
-  Glucose -> "GLUCOSE"
-  Glucose41 -> "GLUCOSE41"
-  Lingeling -> "LINGELING"
-  MiniSat -> "MINISAT"
-  MiniSatProver -> "MINISAT_PROVER"
-  PLingeling -> "PLINGELING"
-  SAT4J -> "SAT4J"
-  Spear -> "SPEAR"
+  BerkMin -> "berkmin"
+  Glucose -> "glucose"
+  Glucose41 -> "glucose41"
+  Lingeling -> "lingeling.parallel"
+  MiniSat -> "minisat"
+  MiniSatProver -> "minisat.prover"
+  PLingeling -> "plingeling"
+  SAT4J -> "sat4j"
+  SAT4JLight -> "sat4j.light"
+  SAT4JPMax -> "sat4j.pmax"
+  Spear -> "spear"
 
 {-|
 Configuration for calling alloy. These are:
@@ -265,7 +279,7 @@ getRawInstancesWith config content
       $ drop 1 $ splitOn [begin] out
   where
     begin :: ByteString
-    begin = "---INSTANCE---"
+    begin = "---Trace---"
     filterLast _ []     = []
     filterLast p x@[_]  = filter p x
     filterLast p (x:xs) = x:filterLast p xs

@@ -2,6 +2,8 @@
 
 ## Unreleased changes
 
+- upgrade to Alloy 6.2.0
+
 ## Released changes
 
 ### 0.5

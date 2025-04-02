@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-JARS=commons-cli/commons-cli-1.5.0.jar:org.alloytools.alloy.dist.jar:slf4j/slf4j-simple-1.7.36.jar
+JARS=commons-cli/commons-cli-1.5.0.jar:org.alloytools.alloy.dist.jar
 
 docker buildx build --output . .
 javac -target 7 -source 7 -bootclasspath rt.jar -cp ${JARS} RunAlloy.java -d .

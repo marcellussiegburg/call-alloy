@@ -70,16 +70,29 @@ combineEntries = foldr createOrInsert M.empty
 crlf :: Parser Char
 crlf = char '\r' *> char '\n'
 
+eof' :: Parser ()
+eof' = optional (char '\r') *> eof
+
 endOfLine :: Parser Char
 endOfLine = newline <|> crlf
 
 alloyInstance :: Parser [Entries (,)]
-alloyInstance = (++)
-  <$> entrySection "---INSTANCE---"
-  <*> entrySection "------State 0-------"
+alloyInstance =
+  entrySection "------State 0 (loop)-------"
   where
-    entrySection x = (try (void $ string x *> endOfLine) <|> return ())
-      *> many entry
+    entrySection x =
+      string x
+      *> endOfLine
+      *> many (try entry)
+      <* many alloyInfo
+      <* eof'
+    alloyInfo =
+      string "c last restart ## conflicts  :  "
+      *> many digit
+      *> space
+      *> many digit
+      *> space
+      *> (void (try endOfLine) <|> eof')
 
 entry :: Parser (Entries (,))
 entry = do
@@ -87,7 +100,7 @@ entry = do
   entrySignature <- sig
   (entrySignature,) . Entry entryAnnotation <$> ((,)
               <$> ((string "<:" *> word) <|> pure "")
-              <*> parseRelations <* (void endOfLine <|> eof))
+              <*> parseRelations <* (void (try endOfLine) <|> eof'))
 
 sig :: Parser Signature
 sig = do

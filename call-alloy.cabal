@@ -1,6 +1,6 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.36.0.
+-- This file has been generated from package.yaml by hpack version 0.37.0.
 --
 -- see: https://github.com/sol/hpack
 
@@ -26,13 +26,10 @@ extra-source-files:
     test/unit/readmeExampleSpecification.als
 data-files:
     alloy/RunAlloy.class
-    alloy/SATSolver.class
     org.alloytools.alloy.dist.jar
     commons-cli/commons-cli-1.5.0.jar
     commons-cli/NOTICE.txt
     commons-cli/LICENSE.txt
-    slf4j/slf4j-simple-1.7.36.jar
-    slf4j/LICENSE
 data-dir:       data
 
 source-repository head

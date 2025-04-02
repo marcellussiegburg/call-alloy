@@ -8,6 +8,7 @@ import edu.mit.csail.sdg.parser.CompUtil;
 import edu.mit.csail.sdg.translator.A4Options;
 import edu.mit.csail.sdg.translator.A4Solution;
 import edu.mit.csail.sdg.translator.TranslateAlloyToKodkod;
+import kodkod.engine.satlab.SATFactory;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -16,34 +17,6 @@ import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 import java.util.Scanner;
-
-enum SATSolver {
-    BERKMIN(A4Options.SatSolver.BerkMinPIPE, true), // not tested
-    //CRYPTOMINISAT(A4Options.SatSolver.CryptoMiniSatJNI, ???), // not supported yet
-    GLUCOSE(A4Options.SatSolver.GlucoseJNI, true),
-    GLUCOSE41(A4Options.SatSolver.Glucose41JNI, true),
-    LINGELING(A4Options.SatSolver.LingelingJNI, false),
-    MINISAT(A4Options.SatSolver.MiniSatJNI, true),
-    MINISAT_PROVER(A4Options.SatSolver.MiniSatProverJNI, true),
-    PLINGELING(A4Options.SatSolver.PLingelingJNI, false),
-    SAT4J(A4Options.SatSolver.SAT4J, true),
-    SPEAR(A4Options.SatSolver.SpearPIPE, true); // not tested
-    //TO_CNF(A4Options.SatSolver.CNF ??) // not suitable
-    //TO_KODKOD(A4Options.SatSolver.KK ??) // not suitable
-
-    private A4Options.SatSolver solver;
-    private boolean incremental;
-    public A4Options.SatSolver getSolver() {
-        return this.solver;
-    }
-    public boolean isIncremental() {
-        return this.incremental;
-    }
-    private SATSolver(A4Options.SatSolver solver, boolean incremental) {
-        this.solver = solver;
-        this.incremental = incremental;
-    }
-}
 
 public class RunAlloy {
 
@@ -88,26 +61,18 @@ public class RunAlloy {
             options.noOverflow = true;
         }
         String cmdSatSolver = cmd.getOptionValue("s");
-        SATSolver solver = null;
-        for (SATSolver x : SATSolver.values()) {
-            if (cmdSatSolver.equals(x.name())) {
-                solver = x;
-            }
-        }
-        if (solver == null) {
-            System.out.println("No solver or invalid solver chosen. Choose one of:");
-            for (SATSolver x : SATSolver.values()) {
-                System.out.println("  " + x.name());
-            }
+        try {
+            options.solver = SATFactory.get(cmdSatSolver);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            System.err.println(e);
             System.exit(2);
-        } else {
-            options.solver = solver.getSolver();
         }
 
         for (Command command: module.getAllCommands()) {
             int i = 0;
             A4Solution ans = TranslateAlloyToKodkod.execute_command(reporter, module.getAllReachableSigs(), command, options);
-            if (solver.isIncremental()) {
+            if (options.solver.incremental()) {
                 while (maxInstances != i++ && ans.satisfiable()) {
                     if (ans.satisfiable()) {
                         System.out.print(ans);

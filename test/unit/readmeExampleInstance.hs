@@ -41,39 +41,6 @@ fromList [
       annotation = Nothing,
       relation = fromList [("", EmptyRelation)]
       }),
-  ( Signature {scope = Nothing, sigName = "end"},
-    Entry {
-      annotation = Nothing,
-      relation = fromList [
-        ( "",
-          Id (NumberObject {number = 0}))
-        ]
-      }),
-  ( Signature {scope = Nothing, sigName = "integers"},
-    Entry {
-      annotation = Nothing,
-      relation = fromList [
-        ( "",
-          Single (fromList [
-            NumberObject {number = -4},
-            NumberObject {number = -3},
-            NumberObject {number = -2},
-            NumberObject {number = -1},
-            NumberObject {number = 0},
-            NumberObject {number = 1},
-            NumberObject {number = 2},
-            NumberObject {number = 3}
-            ]))
-        ]
-      }),
-  ( Signature {scope = Nothing, sigName = "loop"},
-    Entry {
-      annotation = Nothing,
-      relation = fromList [
-        ( "",
-          Id (NumberObject {number = 0}))
-        ]
-      }),
   ( Signature {scope = Nothing, sigName = "none"},
     Entry {
       annotation = Nothing,
