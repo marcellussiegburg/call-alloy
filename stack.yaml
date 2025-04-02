@@ -1,7 +1,5 @@
-resolver: lts-22.17
-extra-deps:
-  - string-interpolate-0.3.2.1@sha256:a2fc9f9fa5b2ba254227164d2218c1665cff5fd3dae750e77163f6a9d7dcbb90,4125
+resolver: lts-23.17
+extra-deps: []
 allow-newer: true
 allow-newer-deps:
-  - ansi-terminal
-  - string-interpolate
+  - ansi-terminal # for Win32
