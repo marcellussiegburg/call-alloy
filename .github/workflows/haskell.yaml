@@ -23,12 +23,13 @@ jobs:
           - { resolver: nightly, flag: test-different-solvers }
         include:
           - os: ubuntu-latest
-            apt-get: java-common
-            test-arguments: '--skip=PLingeling'
+            apt: java-common
+            test-arguments: ''
           - os: macOS-latest
-            test-arguments: '--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
+            test-arguments: ''
           - os: windows-latest
-            test-arguments: '--skip=Glucose --skip=Glucose41 --skip=Lingeling --skip=MiniSat --skip=MiniSatProver --skip=PLingeling'
+            choco: oracle17jdk
+            test-arguments: '--skip=Lingeling --skip=MiniSatProver'
         exclude:
           - os: macOS-latest
             plan: {resolver: lts-18.28}
@@ -38,89 +39,120 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
-    - name: Install ${{ matrix.os }} Packages
-      uses: delgurth/get-package@v6.0.0
-      with:
-        apt-get: ${{ matrix.apt-get }}
-        brew: ${{ matrix.brew }}
+      - name: Install ${{ matrix.os }} Packages
+        uses: ConorMacBride/install-package@v1
+        with:
+          apt: ${{ matrix.apt }}
+          brew: ${{ matrix.brew }}
+          choco: ${{ matrix.choco }}
 
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-    - uses: actions/cache@v4
-      name: Cache ~/.stack
-      with:
-        path: ~/.stack
-        key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
-          ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
-          ${{ runner.os }}-stack-global-
-        save-always: true
-      if: contains(matrix.os, 'windows') == false
+      - name: Restore ~/.stack
+        id: cache-stack-unix-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
+            ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
+        if: contains(matrix.os, 'windows') == false
 
-    - uses: actions/cache@v4
-      name: Cache %APPDATA%\stack %LOCALAPPDATA%\Programs\stack
-      with:
-        path: |
-            ~\AppData\Roaming\stack
-            ~\AppData\Local\Programs\stack
-        key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
-        restore-keys: |
-          ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
-          ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
-          ${{ runner.os }}-stack-global-
-        save-always: true
-      if: contains(matrix.os, 'windows')
+      - name: Restore %APPDATA%\stack %LOCALAPPDATA%\Programs\stack
+        id: cache-stack-windows-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+              ~\AppData\Roaming\stack
+              ~\AppData\Local\Programs\stack
+          key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
+            ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}
+        if: contains(matrix.os, 'windows')
 
-    - uses: actions/cache@v4
-      name: Cache .stack-work
-      with:
-        path: .stack-work
-        key: ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}-${{ hashFiles('**/*.hs') }}
-        restore-keys: |
-          ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
-          ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}
-          ${{ runner.os }}-stack-work-
+      - name: Restore .stack-work
+        id: cache-stack-work-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: .stack-work
+          key: ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}-${{ hashFiles('**/*.hs') }}
+          restore-keys: |
+            ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}
+            ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}
 
-    - name: Setup stack
-      uses: haskell-actions/setup@v2
-      with:
-        enable-stack: true
-        stack-no-global: true
+      - name: Setup stack
+        uses: haskell-actions/setup@v2
+        with:
+          enable-stack: true
+          stack-no-global: true
 
-    - name: Install dependencies on unix
-      run: |
-        set -ex
-        stack --no-terminal --install-ghc $ARGS test --bench --only-dependencies
-        set +ex
-      env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }}"
-      if: contains(matrix.os, 'windows') == false
+      - name: Install dependencies on unix
+        run: |
+          set -ex
+          stack --no-terminal --install-ghc $ARGS test --bench --only-dependencies
+          set +ex
+        env:
+          ARGS: "--resolver=${{ matrix.plan.resolver }}"
+        if: contains(matrix.os, 'windows') == false
 
-    - name: Install dependencies on windows
-      shell: powershell
-      run: |
-        stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --bench --only-dependencies
-      env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }}"
-      if: contains(matrix.os, 'windows')
+      - name: Install dependencies on windows
+        shell: powershell
+        run: |
+          stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --bench --only-dependencies
+        env:
+          ARGS: "--resolver=${{ matrix.plan.resolver }}"
+        if: contains(matrix.os, 'windows')
 
-    - name: Build on unix
-      run: |
-        set -ex
-        stack --no-terminal --install-ghc test ${ARGS} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps --test-arguments="${TEST_ARGUMENTS}"
-        set +ex
-      env:
-        ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }}"
-        TEST_ARGUMENTS: '${{ matrix.test-arguments }}'
-      if: contains(matrix.os, 'windows') == false
+      - name: Build on unix
+        run: |
+          set -ex
+          stack --no-terminal --install-ghc test ${ARGS} --coverage --bench \
+            --no-run-benchmarks --haddock --no-haddock-deps \
+            --test-arguments="${TEST_ARGUMENTS}"
+          set +ex
+        env:
+          ARGS: "--resolver=${{ matrix.plan.resolver }} --flag call-alloy:${{ matrix.plan.flag }}"
+          TEST_ARGUMENTS: '${{ matrix.test-arguments }}'
+        if: contains(matrix.os, 'windows') == false
 
-    - name: Build on windows
-      shell: powershell
-      run: |
-        stack --no-terminal --install-ghc test ${env:RESOLVER} ${env:FLAG} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps ${env:TEST_ARGUMENTS}
-      env:
-        RESOLVER: "--resolver=${{ matrix.plan.resolver }}"
-        FLAG: "--flag=call-alloy:${{ matrix.plan.flag }}"
-        TEST_ARGUMENTS: "--test-arguments=${{ matrix.test-arguments }}"
-      if: contains(matrix.os, 'windows')
+      - name: Build on windows
+        shell: powershell
+        run: |
+          Import-Module "$env:ChocolateyInstall/helpers/chocolateyInstaller.psm1"
+          refreshenv
+          stack --no-terminal --install-ghc test ${env:RESOLVER} ${env:FLAG} --coverage --bench --no-run-benchmarks --haddock --no-haddock-deps ${env:TEST_ARGUMENTS}
+        env:
+          RESOLVER: "--resolver=${{ matrix.plan.resolver }}"
+          FLAG: "--flag=call-alloy:${{ matrix.plan.flag }}"
+          TEST_ARGUMENTS: "--test-arguments=${{ matrix.test-arguments }}"
+        if: contains(matrix.os, 'windows')
+
+      - name: Cache ~/.stack
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.stack
+          key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+        if: >-
+          always() && contains(matrix.os, 'windows') == false
+          && steps.cache-stack-unix-restore.outputs.cache-hit != 'true'
+
+      - name: Cache %APPDATA%\stack %LOCALAPPDATA%\Programs\stack
+        uses: actions/cache/save@v4
+        with:
+          path: |
+              ~\AppData\Roaming\stack
+              ~\AppData\Local\Programs\stack
+          key: ${{ runner.os }}-stack-global-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}
+        if: >-
+          always() && contains(matrix.os, 'windows')
+          && steps.cache-stack-windows-restore.outputs.cache-hit != 'true'
+
+      - name: Cache .stack-work
+        uses: actions/cache/save@v4
+        with:
+          path: .stack-work
+          key: ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}-${{ hashFiles('stack.yaml') }}-${{ hashFiles('package.yaml') }}-${{ hashFiles('**/*.hs') }}
+        if: >-
+          steps.cache-stack-work-restore.outputs.cache-hit != 'true'
