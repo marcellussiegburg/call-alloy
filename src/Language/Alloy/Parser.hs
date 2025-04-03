@@ -17,7 +17,7 @@ module Language.Alloy.Parser (
   parseInstance,
   ) where
 
-import qualified Data.ByteString.Char8            as BS (putStrLn)
+import qualified Data.ByteString.Char8            as BS (putStrLn, writeFile)
 import qualified Data.Set                         as S (fromList)
 import qualified Data.Map                         as M
   (alter, empty, insert, singleton)
@@ -57,6 +57,7 @@ parseInstance inst = case parseByteString alloyInstance mempty inst of
   Failure l -> do
     liftIO $ BS.putStrLn "Failed parsing Alloys response as AlloyInstance:"
     liftIO $ BS.putStrLn inst
+    liftIO $ BS.writeFile "/tmp/BOOM" inst
     throwM $ ParsingAlloyResponseFailed l
   Success r -> return $ combineEntries r
 
@@ -78,12 +79,20 @@ endOfLine = newline <|> crlf
 
 alloyInstance :: Parser [Entries (,)]
 alloyInstance =
-  entrySection "------State 0 (loop)-------"
+  stateZeroLoop <|> stateZero
   where
-    entrySection x =
-      string x
+    stateZeroLoop =
+      string "------State 0 (loop)-------"
       *> endOfLine
-      *> many (try entry)
+      *> entries
+    stateZero = (++)
+      <$> (
+        many entry
+        <* optional (string "------State 0-------" <* endOfLine)
+        )
+      <*> entries
+    entries =
+      many entry
       <* many alloyInfo
       <* eof'
     alloyInfo =

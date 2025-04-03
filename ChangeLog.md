@@ -2,11 +2,17 @@
 
 ## Unreleased changes
 
+## Released changes
+
+### 0.6.1
+
+- fix bug on different State 0 entry response
+
+### 0.6
+
 - upgrade to Alloy 6.2.0
 - document Alloy version
 - improve documentation
-
-## Released changes
 
 ### 0.5
 
