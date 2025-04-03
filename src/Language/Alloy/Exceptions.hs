@@ -28,6 +28,9 @@ import Language.Alloy.Types (
   )
 import Text.Trifecta.Result             (ErrInfo)
 
+{-|
+Any exception that might be raised by @call-alloy@.
+-}
 data CallAlloyException where
   CallAlloyException :: Exception e => e -> CallAlloyException
 
@@ -44,6 +47,14 @@ alloyExceptionFromException x = do
   CallAlloyException a <- fromException x
   cast a
 
+{-|
+An unexpected Alloy response.
+
+This would usually happen when @call-alloy@ does not know how to interpret a
+response that was received from Alloy.
+In this case an issue should be opened, describing in detail what was tried
+and the received error response.
+-}
 newtype AlloyResponseFailure
   = ParsingAlloyResponseFailed ErrInfo
   deriving Show
@@ -52,9 +63,19 @@ instance Exception AlloyResponseFailure where
   toException = alloyExceptionToException
   fromException = alloyExceptionFromException
 
+{-|
+Containing an expectation.
+-}
 newtype Expected = Expected {unExpected :: String}
+
+{-|
+Containing what we actually got.
+-}
 newtype Got = Got {unGot :: String}
 
+{-|
+An object name does not match an expectation.
+-}
 data AlloyObjectNameMismatch
   = AlloyObjectNameMismatch !Expected !Got
 
@@ -68,9 +89,19 @@ instance Exception AlloyObjectNameMismatch where
   toException = alloyExceptionToException
   fromException = alloyExceptionFromException
 
+{-|
+How to refer to a specific relation.
+-}
 newtype RelationName = RelationName {unRelationName :: String}
+
+{-|
+Possible alternatives.
+-}
 newtype Alternatives a = Alternatives {unAlternatives :: [a]}
 
+{-|
+A lookup within an 'AlloyInstance' failed.
+-}
 data AlloyLookupFailed
   = LookupAlloySignatureFailed !Signature !AlloyInstance
   | LookupAlloyRelationFailed !RelationName !(Alternatives RelationName)
@@ -91,6 +122,9 @@ instance Exception AlloyLookupFailed where
   toException = alloyExceptionToException
   fromException = alloyExceptionFromException
 
+{-|
+A relation type does not match.
+-}
 data UnexpectedAlloyRelation
   = ExpectedIdenticalRelationship
   | ExpectedSingleRelationship

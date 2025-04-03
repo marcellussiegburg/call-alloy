@@ -42,13 +42,13 @@ import Language.Alloy.Types (
   )
 
 {-|
-Create a 'Signature' given its scope and name.
+Create a t'Signature' given its scope and name.
 -}
 scoped :: String -> String -> Signature
 scoped = Signature . Just
 
 {-|
-Create an unscoped 'Signature' given its name.
+Create an unscoped t'Signature' given its name.
 -}
 unscoped :: String -> Signature
 unscoped = Signature Nothing

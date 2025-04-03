@@ -60,7 +60,7 @@ data Object =
     } deriving (Eq, Ord, Show)
 
 {-|
-An Alloy relation, i.e. a collection of a tuple of 'Object's.
+An Alloy relation, i.e. a collection of a tuple of t'Object's.
 The collection may be a singleton, a set, a list, ...
 -}
 data Relation a =
