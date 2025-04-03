@@ -4,6 +4,8 @@ This is a simple library to call [Alloy](http://alloytools.org) given a specific
 This package installs a simple Java Library to make an API call to the Alloy Library.
 Alloy is installed (as JAR file) alongside this library as well.
 
+The currently used Alloy version is 6.2.0.
+
 ## Requirements
 
 - Java Runtime Environment:

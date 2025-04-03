@@ -3,6 +3,7 @@
 ## Unreleased changes
 
 - upgrade to Alloy 6.2.0
+- document Alloy version
 
 ## Released changes
 

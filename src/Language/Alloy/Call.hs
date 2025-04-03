@@ -12,6 +12,7 @@ A requirement for this library to work is a Java Runtime Environment
 (as it is required by Alloy).
 -}
 module Language.Alloy.Call (
+  alloyVersion,
   CallAlloyConfig (maxInstances, noOverflow, satSolver, timeout),
   SatSolver (..),
   defaultCallAlloyConfig,
@@ -30,6 +31,17 @@ import Language.Alloy.Types             as Types
 
 import Control.Monad.Catch              (MonadThrow)
 import Control.Monad.IO.Class           (MonadIO (liftIO))
+
+{-|
+The currently used Alloy version.
+
+>>> alloyVersion
+"6.2.0"
+
+@since 0.6
+-}
+alloyVersion :: String
+alloyVersion = "6.2.0"
 
 {-|
 This function may be used to get all model instances for a given Alloy
