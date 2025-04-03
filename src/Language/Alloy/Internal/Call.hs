@@ -4,7 +4,7 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-|
 Module      : Language.Alloy.Internal.Call
-Copyright   : (c) Marcellus Siegburg, 2019 - 2021
+Copyright   : (c) Marcellus Siegburg, 2019 - 2025
 License     : MIT
 
 This module provides the basic internal functionality to retrieve the raw
@@ -12,7 +12,7 @@ results from calling Alloy.
 It provides data types and functions to interact with Alloy.
 -}
 module Language.Alloy.Internal.Call (
-  CallAlloyConfig (maxInstances, noOverflow, satSolver, timeout),
+  CallAlloyConfig (..),
   SatSolver (..),
   defaultCallAlloyConfig,
   getRawInstances,
@@ -158,14 +158,13 @@ toParameter = \case
   Spear -> "spear"
 
 {-|
-Configuration for calling alloy. These are:
-
- * maximal number of instances to retrieve ('Nothing' for all)
- * whether to not overflow when calculating numbers within Alloy
- * an timeout after which to forcibly kill Alloy
-   (retrieving only instances that were returned before killing the process)
+Configuration for calling alloy.
 -}
-data CallAlloyConfig = CallAlloyConfig {
+data CallAlloyConfig =
+  -- | you should use 'defaultCallAlloyConfig' instead of this constructor
+  -- as additional configuration parameters might be introduced in later
+  -- releases.
+  CallAlloyConfig {
   -- | maximal number of instances to retrieve ('Nothing' for all)
   maxInstances :: !(Maybe Integer),
   -- | whether to not overflow when calculating numbers within Alloy
@@ -241,7 +240,7 @@ callAlloyWith config = do
 This function may be used to get all raw model instances for a given Alloy
 specification. It calls Alloy via a Java interface and splits the raw instance
 answers before returning the resulting list of raw instances.
-Parameters are set using a 'CallAlloyConfig'.
+Parameters are set using a t'CallAlloyConfig'.
 -}
 getRawInstancesWith
   :: CallAlloyConfig

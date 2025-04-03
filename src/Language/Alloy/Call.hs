@@ -1,7 +1,7 @@
 {-|
 Module      : Language.Alloy.Call
 Description : A simple library to call Alloy given a specification
-Copyright   : (c) Marcellus Siegburg, 2019 - 2021
+Copyright   : (c) Marcellus Siegburg, 2019 - 2025
 License     : MIT
 Maintainer  : marcellus.siegburg@uni-due.de
 
@@ -13,7 +13,7 @@ A requirement for this library to work is a Java Runtime Environment
 -}
 module Language.Alloy.Call (
   alloyVersion,
-  CallAlloyConfig (maxInstances, noOverflow, satSolver, timeout),
+  CallAlloyConfig (..),
   SatSolver (..),
   defaultCallAlloyConfig,
   existsInstance,
@@ -63,7 +63,7 @@ getInstances maxIs = getInstancesWith defaultCallAlloyConfig {
 This function may be used to get all model instances for a given Alloy
 specification. It calls Alloy via a Java interface and parses the raw instance
 answers before returning the resulting list of 'AlloyInstance's.
-Parameters are set using a 'CallAlloyConfig'.
+Parameters are set using a t'CallAlloyConfig'.
 -}
 getInstancesWith
   :: (MonadIO m, MonadThrow m)

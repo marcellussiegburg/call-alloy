@@ -4,6 +4,7 @@
 
 - upgrade to Alloy 6.2.0
 - document Alloy version
+- improve documentation
 
 ## Released changes
 
