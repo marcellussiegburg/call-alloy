@@ -92,7 +92,7 @@ alloyInstance =
         )
       <*> entries
     entries =
-      many entry
+      many (try entry)
       <* many alloyInfo
       <* eof'
     alloyInfo =

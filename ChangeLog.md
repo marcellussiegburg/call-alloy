@@ -4,7 +4,11 @@
 
 ## Released changes
 
-### 0.6.1
+### 0.6.0.2
+
+- ignore finalizer warnings
+
+### 0.6.0.1
 
 - fix bug on different State 0 entry response
 

@@ -332,6 +332,8 @@ removeInfoLines (x:xs)
   = removeInfoLines xs
   | Just _ <- BS.stripPrefix "[main] WARN" x
   = removeInfoLines xs
+  | Just _ <- BS.stripPrefix "[Finalizer] WARN" x
+  = removeInfoLines xs
   | x == partialInstance
   = removeInfoLines xs
 removeInfoLines xs = xs
