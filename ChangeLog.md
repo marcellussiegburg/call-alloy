@@ -4,6 +4,10 @@
 
 ## Released changes
 
+### 0.6.0.3
+
+- fix native-access bug with recent Java versions
+
 ### 0.6.0.2
 
 - ignore finalizer warnings

@@ -226,7 +226,8 @@ callAlloyWith
 callAlloyWith config = do
   classPath <- getClassPath
   let callAlloy = proc "java"
-        $ ["-cp", classPath, classPackage ++ '.' : className,
+        $ ["--enable-native-access=ALL-UNNAMED",
+           "-cp", classPath, classPackage ++ '.' : className,
            "-i", show $ fromMaybe (-1) $ maxInstances config]
         ++ ["-o" | not $ noOverflow config]
         ++ ["-s", toParameter (satSolver config)]
