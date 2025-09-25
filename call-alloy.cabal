@@ -47,6 +47,7 @@ source-repository head
 
 flag test-different-solvers
   description: During tests different solvers are called to test if they are working on the current system
+
   manual: True
   default: False
 

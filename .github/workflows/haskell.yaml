@@ -115,7 +115,7 @@ jobs:
       - name: Install dependencies on windows
         shell: powershell
         run: |
-          stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --bench \
+          stack --no-terminal -j 1 --install-ghc ${env:ARGS} test --bench `
             --only-dependencies
         env:
           ARGS: "--resolver=${{ matrix.plan.resolver }}"
