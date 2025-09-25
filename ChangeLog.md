@@ -25,7 +25,7 @@
 ### 0.5
 
 - use MonadThrow instead of MonadError
-- add Readme eample to test cases
+- add readme example to test cases
 
 ### 0.4.1.1
 

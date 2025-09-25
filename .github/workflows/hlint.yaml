@@ -9,19 +9,23 @@ on:
     branches:
       - master
 
+permissions: read-all
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: "Set up HLint"
-        uses: haskell-actions/hlint-setup@v2
+        uses: haskell-actions/hlint-setup@fe9cd1cd1af94a23900c06738e73f6ddb092966a
         with:
-          version: "3.5"
+          version: latest
 
       - name: "Run HLint"
-        uses: haskell-actions/hlint-run@v2
+        uses: haskell-actions/hlint-run@eaca4cfbf4a69f4eb875df38b6bc3e1657020378
         with:
           path: '["src/", "test/"]'
           fail-on: suggestion
