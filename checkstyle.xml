@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module name="LineLength">
+  <property name="max" value="100"/>
+</module>

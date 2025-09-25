@@ -17,7 +17,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
-public class RunAlloy {
+public final class RunAlloy {
 
   private RunAlloy() {
     throw new UnsupportedOperationException("Utility class");
