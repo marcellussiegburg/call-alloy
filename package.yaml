@@ -1,10 +1,11 @@
-name:                call-alloy
-version:             0.6.0.3
-github:              "marcellussiegburg/call-alloy"
-license:             MIT
-author:              "Marcellus Siegburg"
-maintainer:          "marcellus.siegburg@uni-due.de"
-copyright:           "2019-2025 Marcellus Siegburg"
+---
+name: call-alloy
+version: 0.6.0.3
+github: "marcellussiegburg/call-alloy"
+license: MIT
+author: "Marcellus Siegburg"
+maintainer: "marcellus.siegburg@uni-due.de"
+copyright: "2019-2025 Marcellus Siegburg"
 tested-with:
   - GHC == 9.12.2
   - GHC == 9.10.1
@@ -17,18 +18,18 @@ tested-with:
 
 data-dir: data
 data-files:
-- alloy/RunAlloy.class
-- org.alloytools.alloy.dist.jar
-- commons-cli/commons-cli-1.5.0.jar
-- commons-cli/NOTICE.txt
-- commons-cli/LICENSE.txt
+  - alloy/RunAlloy.class
+  - org.alloytools.alloy.dist.jar
+  - commons-cli/commons-cli-1.5.0.jar
+  - commons-cli/NOTICE.txt
+  - commons-cli/LICENSE.txt
 extra-source-files:
-- README.md
-- LICENSE
-- ChangeLog.md
-- test/unit/readmeExampleInstance.hs
-- test/unit/readmeExampleResult.hs
-- test/unit/readmeExampleSpecification.als
+  - README.md
+  - LICENSE
+  - ChangeLog.md
+  - test/unit/readmeExampleInstance.hs
+  - test/unit/readmeExampleResult.hs
+  - test/unit/readmeExampleSpecification.als
 ghc-options:
   - -Wall
   - -Wincomplete-uni-patterns
@@ -36,37 +37,41 @@ ghc-options:
   - -Widentities
   - -Wredundant-constraints
 
-synopsis:            A simple library to call Alloy given a specification
-category:            Language
+synopsis: A simple library to call Alloy given a specification
+category: Language
 
-description:         Please see the README on GitHub at <https://github.com/marcellussiegburg/call-alloy#readme>
+description: >
+  Please see the README on GitHub at
+  <https://github.com/marcellussiegburg/call-alloy#readme>
 
 dependencies:
-- async                       >= 2.2.1 && < 2.3
-- base                        >= 4.12 && < 5
-- bytestring                  >= 0.10.4 && < 0.13
-- containers                  >= 0.6 && < 0.9
-- directory                   >= 1.3 && < 1.4
-- exceptions                  >= 0.8.1 && < 0.11
-- extra                       >= 1.7 && < 1.9
-- filepath                    >= 1.4 && < 1.6
-- process                     >= 1.6 && < 1.7
-- split                       >= 0.2 && < 0.3
-- transformers                >= 0.5.0.0 && < 0.7
-- trifecta                    >= 2 && < 2.2
+  - async                       >= 2.2.1 && < 2.3
+  - base                        >= 4.12 && < 5
+  - bytestring                  >= 0.10.4 && < 0.13
+  - containers                  >= 0.6 && < 0.9
+  - directory                   >= 1.3 && < 1.4
+  - exceptions                  >= 0.8.1 && < 0.11
+  - extra                       >= 1.7 && < 1.9
+  - filepath                    >= 1.4 && < 1.6
+  - process                     >= 1.6 && < 1.7
+  - split                       >= 0.2 && < 0.3
+  - transformers                >= 0.5.0.0 && < 0.7
+  - trifecta                    >= 2 && < 2.2
 when:
-- condition: os(windows)
-  then:
-    cpp-options: -DWINDOWS
-    dependencies:
-    - Win32                   >= 2.5 && < 2.15
-  else:
-    dependencies:
-    - unix                    >= 2.7 && < 2.9
+  - condition: os(windows)
+    then:
+      cpp-options: -DWINDOWS
+      dependencies:
+        - Win32                   >= 2.5 && < 2.15
+    else:
+      dependencies:
+        - unix                    >= 2.7 && < 2.9
 
 flags:
   test-different-solvers:
-    description: During tests different solvers are called to test if they are working on the current system
+    description: >
+      During tests different solvers are called to test
+      if they are working on the current system
     manual: true
     default: false
 
@@ -79,19 +84,19 @@ library:
 
 tests:
   call-alloy-test:
-    main:                Spec.hs
+    main: Spec.hs
     source-dirs:
-    - src
-    - test
+      - src
+      - test
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - call-alloy
-    - file-embed
-    - hspec
-    - string-interpolate
+      - call-alloy
+      - file-embed
+      - hspec
+      - string-interpolate
     when:
       condition: flag(test-different-solvers)
       cpp-options: -DTEST_DIFFERENT_SOLVERS
