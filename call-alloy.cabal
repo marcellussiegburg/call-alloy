@@ -122,6 +122,7 @@ test-suite call-alloy-test
     , file-embed
     , filepath >=1.4 && <1.6
     , hspec
+    , pretty-show
     , process ==1.6.*
     , split ==0.2.*
     , string-interpolate

@@ -10,7 +10,8 @@ The currently used Alloy version is 6.2.0.
 
 - Java Runtime Environment:
   There is currently no warning if you have not set up any Java Runtime Environment.
-  However, you will get runtime errors if it is not available when a call to Alloy happens.
+  However, you will get runtime errors if it is not available
+  when a call to Alloy happens.
   If you want to force a check, perform the test cases.
 
 ## Please note
@@ -53,10 +54,14 @@ run withFlow for 3 Int, 2 Node
 
 ```
 
-The graph is consisting of `Node`s, which might have some goods `stored` and may deliver them to other `Node`s (via `flow`).
+The graph is consisting of `Node`s, which might have some goods `stored`
+and may deliver them to other `Node`s (via `flow`).
 `Node`s do not have `flow` to themselves.
-The `currentFlow` is the minimum between the flow from the starting `Node` to the end `Node` and the currently `stored` goods at the starting `Node` (note: intermediate `Node`s are not allowed).
-We call two `Nodes` `x` and `y` `withFlow` if `currentFlow` from `x` to `y` is greater than `0`.
+The `currentFlow` is the minimum between the flow
+from the starting `Node` to the end `Node` and the currently `stored` goods
+at the starting `Node` (note: intermediate `Node`s are not allowed).
+We call two `Nodes` `x` and `y` `withFlow` if `currentFlow` from `x` to `y`
+is greater than `0`.
 We restrict our search to `3`-Bit signed `Int` values and `2` `Nodes`.
 
 ### An instance example

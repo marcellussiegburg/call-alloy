@@ -15,8 +15,11 @@ max_line_length = 80
 [.github/workflows/*.yaml]
 max_line_length = 85
 
-[.github/actions/spelling/*]
+[.github/workflows/actions/spelling/*]
 max_line_length = unset
+
+[data/commons-cli/LICENSE.txt]
+indent_size = unset
 
 [**.cabal]
 max_line_length = unset

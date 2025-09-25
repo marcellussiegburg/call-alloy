@@ -135,7 +135,12 @@ parseRelations = char '='
 
 object :: Parser Object
 object =
-  try (Object . intercalate "/" <$> slashedWord <* char '$' <*> (read <$> some digit))
+  try (
+    Object . intercalate "/"
+    <$> slashedWord
+    <* char '$'
+    <*> (read <$> some digit)
+    )
   <|> try (NumberObject <$> int)
   <|> NamedObject <$> word
 

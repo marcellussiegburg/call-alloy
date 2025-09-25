@@ -107,7 +107,9 @@ specifyObject f o = case o of
   Object n i -> f n i
   NamedObject g -> error $ "there is no way of converting Object "
     ++ g
-    ++ "\nPlease open an issue at https://github.com/marcellussiegburg/call-alloy stating what you tried to attempt"
+    ++ "\nPlease open an issue at "
+    ++ "https://github.com/marcellussiegburg/call-alloy"
+    ++ " stating what you tried to attempt"
 
 {-|
 Retrieve a single value of a given 'AlloySig'.
