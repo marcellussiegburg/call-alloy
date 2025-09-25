@@ -19,7 +19,16 @@ import org.apache.commons.cli.ParseException;
 
 public class RunAlloy {
 
-  public static void main(String[] args) throws Err {
+  private RunAlloy() {
+    throw new UnsupportedOperationException("Utility class");
+  }
+
+  /**
+   * Calls Alloy evaluating command line arguments to limit search and choose solver to use.
+   *
+   * @param args command line arguments
+   */
+  public static void main(final String[] args) throws Err {
 
     final Options cmdOptions = new Options();
     cmdOptions.addOption(
@@ -36,7 +45,7 @@ public class RunAlloy {
     }
   }
 
-  private static void runAlloy(CommandLine cmd) throws Err {
+  private static void runAlloy(final CommandLine cmd) throws Err {
     String cmdMaxInstances = cmd.getOptionValue("i");
     int maxInstances;
     if (cmdMaxInstances == null) {
