@@ -83,7 +83,8 @@ int = object "" id
 For retrieval of an unmixed type of values using a get... function
 (should be the case for uniformly base named values;
 this is usually never true for the universe (@lookupSig (unscoped "univ")@))
-I.e. setting and checking the 'String' for the base name of the value to look for,
+I.e. setting and checking the 'String' for the base name
+of the value to look for,
 but failing in case anything different appears (unexpectedly).
 -}
 object

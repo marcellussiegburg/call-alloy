@@ -1,17 +1,17 @@
 # check-spelling/check-spelling configuration
 
-| File                    | Purpose                                                           | Format                   | Info            |
-| ----------------------- | ----------------------------------------------------------------- | ------------------------ | --------------- |
-| dictionary.txt          | Replacement dictionary (creating this file will override default) | one word per line        | [dictionary][1] |
-| allow.txt               | Add words to the dictionary                                       | one word per line        | [allow][2]      |
-| reject.txt              | Remove words from the dictionary (after allow)                    | grep pattern matching    | [reject][3]     |
-| excludes.txt            | Files to ignore entirely                                          | perl regular expression  | [excludes][4]   |
-| only.txt                | Only check matching files (applied after excludes)                | perl regular expression  | [only][5]       |
-| patterns.txt            | Patterns to ignore from checked lines                             | perl regular expression  | [patterns][6]   |
-| candidate.patterns      | Patterns worth adding to patterns.txt                             | perl regex with comments | [candidates][7] |
-| line_forbidden.patterns | Patterns to flag in checked lines                                 | perl regular expression  | [patterns][6]   |
-| expect.txt              | Expected words not in dictionary                                  | one word per line        | [expect][8]     |
-| advice.md               | Supplement for GitHub comment when unrecognized words found       | GitHub Markdown          | [advice][9]     |
+| File                    | Purpose                                                           | Format                                | Info            |
+| ----------------------- | ----------------------------------------------------------------- | ------------------------------------- | --------------- |
+| dictionary.txt          | Replacement dictionary (creating this file will override default) | one word per line                     | [dictionary][1] |
+| allow.txt               | Add words to the dictionary                                       | one word per line                     | [allow][2]      |
+| reject.txt              | Remove words from the dictionary (after allow)                    | grep pattern matching                 | [reject][3]     |
+| excludes.txt            | Files to ignore entirely                                          | perl regular expression               | [excludes][4]   |
+| only.txt                | Only check matching files (applied after excludes)                | perl regular expression               | [only][5]       |
+| patterns.txt            | Patterns to ignore from checked lines                             | perl regular expression               | [patterns][6]   |
+| candidate.patterns      | Patterns worth adding to patterns.txt                             | perl regular expression with comments | [candidates][7] |
+| line_forbidden.patterns | Patterns to flag in checked lines                                 | perl regular expression               | [patterns][6]   |
+| expect.txt              | Expected words not in dictionary                                  | one word per line                     | [expect][8]     |
+| advice.md               | Supplement for GitHub comment when unrecognized words found       | GitHub Markdown                       | [advice][9]     |
 
 Note: you can replace any of these files
 with a directory by the same name (minus the suffix)

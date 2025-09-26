@@ -9,8 +9,17 @@ indent_size = 2
 trim_trailing_whitespace = true
 max_line_length = 80
 
+[*.cabal]
+max_line_length = unset
+
 [*.hs]
 max_line_length = 80
+
+[*.java]
+max_line_length = 100
+
+[*.md]
+max_line_length = unset
 
 [.github/workflows/*.yaml]
 max_line_length = 85
@@ -21,11 +30,8 @@ max_line_length = unset
 [data/commons-cli/LICENSE.txt]
 indent_size = unset
 
-[**.cabal]
-max_line_length = unset
-
-[**.java]
-max_line_length = 100
-
 [stack*.yaml]
 max_line_length = 110
+
+[test/unit/emptySpecInstance.hs]
+indent_size = unset

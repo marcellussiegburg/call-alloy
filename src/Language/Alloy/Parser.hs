@@ -66,7 +66,9 @@ combineEntries = foldr createOrInsert M.empty
   where
     createOrInsert (s, e) = M.alter (Just . alterSig e) s
     alterSig e Nothing  = e { relation = uncurry M.singleton $ relation e}
-    alterSig e (Just y) = y { relation = uncurry M.insert (relation e) (relation y) }
+    alterSig e (Just y) = y {
+      relation = uncurry M.insert (relation e) (relation y)
+      }
 
 crlf :: Parser Char
 crlf = char '\r' *> char '\n'
