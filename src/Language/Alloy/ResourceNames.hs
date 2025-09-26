@@ -1,4 +1,4 @@
-module Language.Alloy.RessourceNames (
+module Language.Alloy.ResourceNames (
   alloyJarName,
   className,
   classPackage,

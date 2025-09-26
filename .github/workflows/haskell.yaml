@@ -9,6 +9,8 @@ on:
     branches:
       - master
 
+permissions: read-all
+
 jobs:
   build:
     strategy:
@@ -42,13 +44,14 @@ jobs:
 
     steps:
       - name: Install ${{ matrix.os }} Packages
-        uses: ConorMacBride/install-package@v1
+        uses: ConorMacBride/install-package@3e7ad059e07782ee54fa35f827df52aae0626f30
         with:
           apt: ${{ matrix.apt }}
-          brew: ${{ matrix.brew }}
           choco: ${{ matrix.choco }}
 
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Restore ~/.stack
         id: cache-stack-unix-restore
@@ -98,7 +101,7 @@ jobs:
             ${{ runner.os }}-stack-work-${{ matrix.plan.resolver }}
 
       - name: Setup stack
-        uses: haskell-actions/setup@v2
+        uses: haskell-actions/setup@7909071ceec0344debcc968c6c7a96a52e8dd0d7
         with:
           enable-stack: true
           stack-no-global: true

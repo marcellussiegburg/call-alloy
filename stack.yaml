@@ -3,4 +3,4 @@ resolver: lts-23.17
 extra-deps: []
 allow-newer: true
 allow-newer-deps:
-  - ansi-terminal  # for Win32
+  - ansi-terminal # for Win32

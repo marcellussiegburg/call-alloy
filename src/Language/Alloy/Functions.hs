@@ -83,7 +83,8 @@ int = object "" id
 For retrieval of an unmixed type of values using a get... function
 (should be the case for uniformly base named values;
 this is usually never true for the universe (@lookupSig (unscoped "univ")@))
-I.e. setting and checking the 'String' for the base name of the value to look for,
+I.e. setting and checking the 'String' for the base name
+of the value to look for,
 but failing in case anything different appears (unexpectedly).
 -}
 object
@@ -107,7 +108,9 @@ specifyObject f o = case o of
   Object n i -> f n i
   NamedObject g -> error $ "there is no way of converting Object "
     ++ g
-    ++ "\nPlease open an issue at https://github.com/marcellussiegburg/call-alloy stating what you tried to attempt"
+    ++ "\nPlease open an issue at "
+    ++ "https://github.com/marcellussiegburg/call-alloy"
+    ++ " stating what you tried to attempt"
 
 {-|
 Retrieve a single value of a given 'AlloySig'.
@@ -209,8 +212,8 @@ lookupSig
   => Signature
   -> AlloyInstance
   -> m AlloySig
-lookupSig s insta = case M.lookup s insta of
-  Nothing -> throwM $ LookupAlloySignatureFailed s insta
+lookupSig s model = case M.lookup s model of
+  Nothing -> throwM $ LookupAlloySignatureFailed s model
   Just e   -> return e
 
 identity

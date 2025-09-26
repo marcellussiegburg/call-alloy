@@ -60,8 +60,8 @@ library
       Language.Alloy.Functions
       Language.Alloy.Internal.Call
       Language.Alloy.Parser
-      Language.Alloy.RessourceNames
-      Language.Alloy.Ressources
+      Language.Alloy.ResourceNames
+      Language.Alloy.Resources
       Language.Alloy.Types
       Paths_call_alloy
   hs-source-dirs:
@@ -99,8 +99,8 @@ test-suite call-alloy-test
       Language.Alloy.Functions
       Language.Alloy.Internal.Call
       Language.Alloy.Parser
-      Language.Alloy.RessourceNames
-      Language.Alloy.Ressources
+      Language.Alloy.ResourceNames
+      Language.Alloy.Resources
       Language.Alloy.Types
       Language.Alloy.CallSpec
       ReadmeExample
@@ -122,6 +122,7 @@ test-suite call-alloy-test
     , file-embed
     , filepath >=1.4 && <1.6
     , hspec
+    , pretty-show
     , process ==1.6.*
     , split ==0.2.*
     , string-interpolate

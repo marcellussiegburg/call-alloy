@@ -1,0 +1,46 @@
+---
+name: Super-Linter
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
+
+permissions: {}
+
+jobs:
+  build:
+    name: Lint Code Base
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: read
+      statuses: write
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          # Full git history is needed to get a proper
+          # list of changed files within `super-linter`
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Preprocess Haskell files to accept specific single space indent
+        run: |
+          git ls-files '*.hs' -z | xargs -0 sed -i 's/^ )$/  )/'
+
+      - name: Run Linter
+        uses: super-linter/super-linter/slim@ffde3b2b33b745cb612d787f669ef9442b1339a6
+        env:
+          JAVA_FILE_NAME: checkstyle.xml
+          LINTER_RULES_PATH: .
+          MARKDOWN_CONFIG_FILE: .markdownlint.yaml
+          YAML_CONFIG_FILE: .yamllint.yaml
+          YAML_ERROR_ON_WARNING: true
+          GITHUB_ACTIONS_COMMAND_ARGS: -shellcheck=
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

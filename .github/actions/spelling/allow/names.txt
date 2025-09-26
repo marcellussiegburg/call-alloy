@@ -1,0 +1,8 @@
+alloytools
+berkmin
+lingeling
+Marcellus
+minisat
+plingeling
+Siegburg
+skolem

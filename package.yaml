@@ -96,6 +96,7 @@ tests:
       - call-alloy
       - file-embed
       - hspec
+      - pretty-show
       - string-interpolate
     when:
       condition: flag(test-different-solvers)

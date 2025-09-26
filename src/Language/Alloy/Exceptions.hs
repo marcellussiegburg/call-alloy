@@ -107,11 +107,11 @@ data AlloyLookupFailed
   | LookupAlloyRelationFailed !RelationName !(Alternatives RelationName)
 
 instance Show AlloyLookupFailed where
-  show (LookupAlloySignatureFailed s insta) = "LookupAlloySignatureFailed: "
+  show (LookupAlloySignatureFailed s model) = "LookupAlloySignatureFailed: "
     <> showSignature s
     <> " is missing in the Alloy instance"
     <> "; available are: \""
-    <> intercalate "\", " (showSignature <$> M.keys insta)
+    <> intercalate "\", " (showSignature <$> M.keys model)
   show (LookupAlloyRelationFailed rel xs) = "LookupAlloyRelationFailed: "
     <> "relation " ++ unRelationName rel
     <> " is missing in the Alloy instance"

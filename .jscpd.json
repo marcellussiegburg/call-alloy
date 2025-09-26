@@ -1,0 +1,4 @@
+{
+  "reporters": ["consoleFull"],
+  "ignore": [".github", ".stack-work", "**/__snapshots__/**"]
+}

@@ -78,11 +78,11 @@ import System.Process (
   createProcess, proc, terminateProcess, waitForProcess,
   )
 
-import Language.Alloy.RessourceNames (
+import Language.Alloy.ResourceNames (
   className,
   classPackage,
   )
-import Language.Alloy.Ressources (
+import Language.Alloy.Resources (
   alloyJar,
   commonsCliJar,
   slf4jJar,
@@ -134,7 +134,7 @@ data SatSolver
   --
   -- * incremental
   | SAT4JPMax
-  -- ^ SAT4Ji PMax
+  -- ^ SAT4J with Partial Maximum Satisfiability
   --
   -- * incremental
   | Spear
@@ -226,9 +226,11 @@ callAlloyWith
 callAlloyWith config = do
   classPath <- getClassPath
   let callAlloy = proc "java"
-        $ ["--enable-native-access=ALL-UNNAMED",
-           "-cp", classPath, classPackage ++ '.' : className,
-           "-i", show $ fromMaybe (-1) $ maxInstances config]
+        $ [
+          "--enable-native-access=ALL-UNNAMED",
+          "-cp", classPath, classPackage ++ '.' : className,
+          "-i", show $ fromMaybe (-1) $ maxInstances config
+          ]
         ++ ["-o" | not $ noOverflow config]
         ++ ["-s", toParameter (satSolver config)]
   createProcess callAlloy {
@@ -303,26 +305,18 @@ partialInstance :: ByteString
 partialInstance = "---PARTIAL_INSTANCE---"
 
 {-|
-Removes lines such as
+Removes lines starting with any of
 
 @
-[main] INFO kodkod.engine.config.Reporter - detecting symmetries ...
-[main] INFO kodkod.engine.config.Reporter - detected 16 equivalence classes of atoms ...
-[main] INFO kodkod.engine.config.Reporter - optimizing bounds and formula (breaking predicate symmetries, inlining, skolemizing) ...
-[main] INFO kodkod.engine.config.Reporter - translating to boolean ...
-[main] INFO kodkod.engine.config.Reporter - generating lex-leader symmetry breaking predicate ...
+[main] INFO
+[main] WARN
+[Finalizer] WARN
 @
 
-and
+and partial instances
 
 @
-[main] WARN kodkod.engine.config.Reporter - Temporal formula: will be reduced to possibly unsound static version.
-@
-
-and
-
-@
-PARTIAL_INSTANCE
+---PARTIAL_INSTANCE---
 @
 
 which seem to be appearing since Alloy-6.0.0
