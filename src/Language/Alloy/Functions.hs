@@ -212,8 +212,8 @@ lookupSig
   => Signature
   -> AlloyInstance
   -> m AlloySig
-lookupSig s insta = case M.lookup s insta of
-  Nothing -> throwM $ LookupAlloySignatureFailed s insta
+lookupSig s model = case M.lookup s model of
+  Nothing -> throwM $ LookupAlloySignatureFailed s model
   Just e   -> return e
 
 identity

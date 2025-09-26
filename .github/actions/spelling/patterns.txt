@@ -37,7 +37,7 @@ https?://[-+0-9a-zA-Z?&=_\/%.]*
 node node
 
 # Java import lines
-^import\s+(static\s+)?[a-zA-Z0-9_.]+\.\*?;
+^import\s+(static\s+)?[a-zA-Z0-9_.]+(\.\*)?;
 
 # ignore specific
 sat4j\.light

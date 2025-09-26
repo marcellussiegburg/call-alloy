@@ -1,7 +1,8 @@
 Alloytools
-Berkmin
-Lingeling
+berkmin
+lingeling
 Marcellus
-Plingeling
+minisat
+plingeling
 Siegburg
-Skolem
+skolem

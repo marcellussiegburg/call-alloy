@@ -26,6 +26,7 @@
 \.gif$
 \.git-blame-ignore-revs$
 \.gitattributes$
+\.gitignore$
 \.graffle$
 \.gz$
 \.icns$
@@ -55,6 +56,7 @@
 \.svgz?$
 \.tar$
 \.tiff?$
+\.trivyignore$
 \.ttf$
 \.wav$
 \.webm$

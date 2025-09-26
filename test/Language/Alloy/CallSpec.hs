@@ -40,15 +40,15 @@ spec = do
     it "an empty spec has an instance" $
       existsInstance "" `shouldReturn` True
     it "a conflicting spec has no instance" $
-      existsInstance "pred a (a: Int) { a > a }\nrun a" `shouldReturn` False
+      existsInstance (runPredicate "a > a") `shouldReturn` False
   describe "getInstances" $ do
     it "an empty spec returns a single trivial instance" $ do
       expected <- readFile "test/unit/emptySpecInstance.hs"
       (ppShow <$> getInstances (Just 2) "") `shouldReturn` init expected
     it "a conflicting spec returns no instance" $
-      getInstances (Just 1) "pred a (a: Int) { a > a }\nrun a" `shouldReturn` []
+      getInstances (Just 1) (runPredicate "a > a") `shouldReturn` []
     it "giving not enough time should return no result" $
-      getInstancesWith cfg "pred a (a: Int) { a >= a }\nrun a" `shouldReturn` []
+      getInstancesWith cfg (runPredicate "a >= a") `shouldReturn` []
 #if TEST_DIFFERENT_SOLVERS
     let unsupported = [BerkMin, Glucose41, PLingeling, Spear]
         solvers = [minBound ..] \\ unsupported
@@ -73,6 +73,8 @@ spec = do
         length <$> getInstancesWith cfg (graph x)
       xs `shouldBe` replicate (fromInteger n) 0
   where
+    runPredicate property =
+      "pred a (a: Int) { " ++  property ++ " }\n" ++ "run a"
     cfg = defaultCallAlloyConfig {
       maxInstances = Nothing,
       timeout      = Just 0
