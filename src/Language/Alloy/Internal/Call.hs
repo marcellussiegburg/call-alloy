@@ -134,7 +134,7 @@ data SatSolver
   --
   -- * incremental
   | SAT4JPMax
-  -- ^ SAT4Ji PMax
+  -- ^ SAT4J with Partial Maximum Satisfiability
   --
   -- * incremental
   | Spear
