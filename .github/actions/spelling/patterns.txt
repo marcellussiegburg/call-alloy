@@ -32,3 +32,16 @@ https?://[-+0-9a-zA-Z?&=_\/%.]*
 
 # ignore parameters for pacman
 -Syu
+
+# ignore allowed sequences of the same word
+node node
+
+# Java import lines
+^import\s+(static\s+)?[a-zA-Z0-9_.]+\.\*?;
+
+# ignore specific
+sat4j\.light
+sat4j\.pmax
+SAT4JLight
+SAT4JPMax
+slf4j

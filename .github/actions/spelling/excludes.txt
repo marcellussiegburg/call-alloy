@@ -64,8 +64,10 @@
 \.yaml$
 \.yml$
 \.zip$
+checkstyle.xml$
+Dockerfile$
 ^\.editorconfig$
 ^\.github/actions/spelling/
 ^\.github/linters/
-^\Qtest/Spec\.hs\E$
-ignore$
+^\Qdata/build-alloy-java.sh\E$
+^\Qtest/Spec.hs\E$

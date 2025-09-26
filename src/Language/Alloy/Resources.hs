@@ -1,4 +1,4 @@
-module Language.Alloy.Ressources (
+module Language.Alloy.Resources (
   alloyJar,
   commonsCliJar,
   slf4jJar,
@@ -7,7 +7,7 @@ module Language.Alloy.Ressources (
 import Data.Functor                     ((<&>))
 import System.FilePath                  ((</>))
 
-import Language.Alloy.RessourceNames (
+import Language.Alloy.ResourceNames (
   alloyJarName, commonsCliJarName, slf4jJarName,
   )
 import Paths_call_alloy                 (getDataDir)

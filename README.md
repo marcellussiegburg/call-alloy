@@ -215,15 +215,15 @@ instanceToNames
   :: MonadThrow m
   => AlloyInstance
   -> m (Set Node, Set (Node, Int), Set (Node, Node, Int), Set Node, Set Node)
-instanceToNames insta = do
+instanceToNames model = do
   let node :: MonadThrow m => String -> Int -> m Node
       node = object "Node" Node
-  n     <- lookupSig (scoped "this" "Node") insta
+  n     <- lookupSig (scoped "this" "Node") model
   nodes <- getSingleAs "" node n
   store <- getDoubleAs "stored" node int n
   flow  <- getTripleAs "flow" node node int n
-  x     <- lookupSig (unscoped "$withFlow_x") insta >>= getSingleAs "" node
-  y     <- lookupSig (unscoped "$withFlow_y") insta >>= getSingleAs "" node
+  x     <- lookupSig (unscoped "$withFlow_x") model >>= getSingleAs "" node
+  y     <- lookupSig (unscoped "$withFlow_y") model >>= getSingleAs "" node
   return (nodes, store, flow, x, y)
 
 ```

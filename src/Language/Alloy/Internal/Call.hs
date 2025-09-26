@@ -78,11 +78,11 @@ import System.Process (
   createProcess, proc, terminateProcess, waitForProcess,
   )
 
-import Language.Alloy.RessourceNames (
+import Language.Alloy.ResourceNames (
   className,
   classPackage,
   )
-import Language.Alloy.Ressources (
+import Language.Alloy.Resources (
   alloyJar,
   commonsCliJar,
   slf4jJar,
