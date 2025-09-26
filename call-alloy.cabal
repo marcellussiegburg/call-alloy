@@ -30,6 +30,7 @@ extra-source-files:
     README.md
     LICENSE
     ChangeLog.md
+    test/unit/emptySpecInstance.hs
     test/unit/readmeExampleInstance.hs
     test/unit/readmeExampleResult.hs
     test/unit/readmeExampleSpecification.als
