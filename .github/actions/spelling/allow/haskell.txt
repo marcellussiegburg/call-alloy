@@ -1,0 +1,17 @@
+bytestring
+concat
+fmap
+foldr
+fst
+GADT
+ghc
+hlint
+hpack
+hspec
+ifdef
+ifndef
+mempty
+NOINLINE
+uncurry
+unlines
+unsnoc

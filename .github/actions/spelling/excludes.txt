@@ -67,7 +67,5 @@
 ^\.editorconfig$
 ^\.github/actions/spelling/
 ^\.github/linters/
-^\Qtest/Spec.hs\E$
-^data/alloy/RunAlloy\.class$
-^test/Spec\.hs$
+^\Qtest/Spec\.hs\E$
 ignore$
