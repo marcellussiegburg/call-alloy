@@ -21,9 +21,10 @@ jobs:
           - { resolver: lts-19.33, flag: test-different-solvers }
           - { resolver: lts-20.26, flag: test-different-solvers }
           - { resolver: lts-21.25, flag: test-different-solvers }
-          - { resolver: lts-22.43, flag: test-different-solvers }
-          - { resolver: lts-23.17, flag: test-different-solvers }
-          - { resolver: lts-23.17, flag: -test-different-solvers }
+          - { resolver: lts-22.44, flag: test-different-solvers }
+          - { resolver: lts-23.28, flag: test-different-solvers }
+          - { resolver: lts-24.12, flag: test-different-solvers }
+          - { resolver: lts-24.12, flag: -test-different-solvers }
           - { resolver: nightly, flag: test-different-solvers }
         include:
           - os: ubuntu-latest
