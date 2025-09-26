@@ -1,0 +1,4 @@
+---
+- ignore:
+    name: "Parse error"
+    src: "test/unit/emptySpecInstance.hs"
